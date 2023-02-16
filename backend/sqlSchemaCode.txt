@@ -37,5 +37,29 @@ CREATE TABLE Event (
   );
   
 
+CREATE TABLE User(
+    id INT,
+    password VARCHAR(25),
+    email VARCHAR(25),
+    PRIMARY KEY(id)
+);
+
+
+CREATE TABLE Student(
+    id INT PRIMARY KEY,
+    univ_id INT NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY id REFERENCES user,
+    FOREIGN KEY univ_id REFERENCES university(univ_id)
+);
+
+
+CREATE TABLE RSO(
+    rso_id INT,
+    id INT,
+    name VARCHAR(25) NOT NULL,
+    PRIMARY KEY(rso_id),
+    FOREIGN KEY(id) REFERENCES Student
+);
 
 
