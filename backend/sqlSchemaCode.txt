@@ -16,7 +16,7 @@ CREATE TABLE Location (
   latitude      FLOAT, 
   longitud      FLOAT,
   PRIMARY KEY (loc_id),
-  FOREIGN KEY (univ_id) REFERENCES University(univ_id)
+  FOREIGN KEY (univ_id) REFERENCES University
   );
 
 CREATE TABLE Event (
@@ -46,11 +46,11 @@ CREATE TABLE User(
 
 
 CREATE TABLE Student(
-    id INT PRIMARY KEY,
+    id INT,
     univ_id INT NOT NULL,
     PRIMARY KEY(id),
-    FOREIGN KEY id REFERENCES user,
-    FOREIGN KEY univ_id REFERENCES university(univ_id)
+    FOREIGN KEY(id) REFERENCES user,
+    FOREIGN KEY(univ_id) REFERENCES university
 );
 
 
@@ -60,6 +60,14 @@ CREATE TABLE RSO(
     name VARCHAR(25) NOT NULL,
     PRIMARY KEY(rso_id),
     FOREIGN KEY(id) REFERENCES Student
+);
+
+CREATE TABLE Superadmin(
+    id INT,
+    univ_id INT UNIQUE,
+    PRIMARY KEY(id)
+    FOREIGN KEY(id) REFERENCES User,
+    FOREIGN KEY(univ_id) REFERENCES University
 );
 
 
