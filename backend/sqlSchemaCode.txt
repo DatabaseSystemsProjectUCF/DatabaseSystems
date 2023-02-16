@@ -1,10 +1,41 @@
 Tables for the entities:
 
+CREATE TABLE University (
+  univ_id       INT,
+  name          CHAR(20),
+  no_students   INT,
+  description   VARCHAR(100),
+  pics          UNKNOWN,
+  PRIMARY KEY (univ_id)
+  );
+  
+CREATE TABLE Location (
+  loc_id        INT,
+  univ_id       INT,
+  name          CHAR(10),
+  latitude      FLOAT, 
+  longitud      FLOAT,
+  PRIMARY KEY (loc_id),
+  FOREIGN KEY (univ_id) REFERENCES University(univ_id)
+  );
+
+CREATE TABLE Event (
+  event_id      INT,
+  loc_id        INT,
+  id       INT,
+  name          CHAR(20),
+  description   VARCHAR(200),
+  category      VARCHAR(20),
+  type          VARCHAR(10) CHECK (type IN ('public', 'private', 'RSO')),
+  time          TIME,
+  date          DATE,
+  phone         CHAR(10),
+  email         CHAR(20),
+  PRIMARY KEY (event_id),
+  FOREIGN KEY (loc_id) REFERENCES Location(loc_id),
+  FOREING KEY (id) REFERENCES Student(id)
+  );
+  
 
 
 
-
-
-
-
-Tables for the relationships:
