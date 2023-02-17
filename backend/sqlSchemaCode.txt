@@ -1,0 +1,73 @@
+Tables for the entities:
+
+CREATE TABLE University (
+  univ_id       INT,
+  name          CHAR(20),
+  no_students   INT,
+  description   VARCHAR(100),
+  pics          UNKNOWN,
+  PRIMARY KEY (univ_id)
+  );
+  
+CREATE TABLE Location (
+  loc_id        INT,
+  univ_id       INT,
+  name          CHAR(10),
+  latitude      FLOAT, 
+  longitud      FLOAT,
+  PRIMARY KEY (loc_id),
+  FOREIGN KEY (univ_id) REFERENCES University
+  );
+
+CREATE TABLE Event (
+  event_id      INT,
+  loc_id        INT,
+  id       INT,
+  name          CHAR(20),
+  description   VARCHAR(200),
+  category      VARCHAR(20),
+  type          VARCHAR(10) CHECK (type IN ('public', 'private', 'RSO')),
+  time          TIME,
+  date          DATE,
+  phone         CHAR(10),
+  email         CHAR(20),
+  PRIMARY KEY (event_id),
+  FOREIGN KEY (loc_id) REFERENCES Location(loc_id),
+  FOREING KEY (id) REFERENCES Student(id)
+  );
+  
+
+CREATE TABLE User(
+    id INT,
+    password VARCHAR(25),
+    email VARCHAR(25),
+    PRIMARY KEY(id)
+);
+
+
+CREATE TABLE Student(
+    id INT,
+    univ_id INT NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(id) REFERENCES user,
+    FOREIGN KEY(univ_id) REFERENCES university
+);
+
+
+CREATE TABLE RSO(
+    rso_id INT,
+    id INT,
+    name VARCHAR(25) NOT NULL,
+    PRIMARY KEY(rso_id),
+    FOREIGN KEY(id) REFERENCES Student
+);
+
+CREATE TABLE Superadmin(
+    id INT,
+    univ_id INT UNIQUE,
+    PRIMARY KEY(id)
+    FOREIGN KEY(id) REFERENCES User,
+    FOREIGN KEY(univ_id) REFERENCES University
+);
+
+
