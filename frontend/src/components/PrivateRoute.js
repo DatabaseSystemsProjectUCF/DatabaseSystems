@@ -10,11 +10,11 @@ import { Navigate } from "react-router-dom"
  *      login page if no user is signed in and a user-specific page
  *      is being accessed.
  * 
- * @param targetPage - Page attempting to access
+ * @param children - Page attempting to access
  * 
  * @returns Elements to reroute if no user is signed in
  */
-export default function PrivateRoute({ targetPage }) {
+export default function PrivateRoute({ children }) {
 
     // IsLoggedIn Status
     const [isLoggedIn, setIsLoggedIn] = useState(checkLoggedInStatus())
@@ -25,5 +25,5 @@ export default function PrivateRoute({ targetPage }) {
     }
 
     // If the current user is not logged in, reditect them to the login page
-    return isLoggedIn ? targetPage : <Navigate to="/login" />;
+    return isLoggedIn ? children : <Navigate to="/Login"/>;
 }

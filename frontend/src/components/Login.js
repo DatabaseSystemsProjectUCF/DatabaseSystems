@@ -36,6 +36,7 @@
                 setError('')
                 setLoading(true)
 
+                // Call the Login API
                 axios.post("http://localhost:8800/login", {
 
                     username: usernameRef.current.value,
@@ -45,6 +46,7 @@
 
                     console.log(response)
 
+                    // Populate browser with the returned User
                     localStorage.setItem(AUTHLEVEL, response.data[0].auth_level)
                     localStorage.setItem(CREATETIME, response.data[0].create_time)
                     localStorage.setItem(ID, response.data[0].user_id)
@@ -86,7 +88,7 @@
             <div>
 
                 {/** Background Image */}
-                <div style={{backgroundImage: `url(${background})`, height: '100vh', width:'201.3vh', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover', opacity:'65%'}}> </div>
+                <div style={{backgroundImage: `url(${background})`, height: '100vh', width:'100vw', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover', opacity:'65%'}}> </div>
 
                 {/** Title and Group Members */}
                 <Container className= "rounded-5 border border-2 border-light text-center" style={{display:'flex', position: 'fixed', left: '125px', bottom: '15%', height:'200px', width: '750px', backgroundColor:'#000000'}}>

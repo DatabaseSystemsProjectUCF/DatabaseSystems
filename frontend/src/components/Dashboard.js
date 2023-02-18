@@ -1,5 +1,6 @@
 /** ----------------------- IMPORTS ----------------------- */
 import { Container, Nav } from 'react-bootstrap';
+import { Navigate } from 'react-router';
 /** ------------------------------------------------------- */
 
 

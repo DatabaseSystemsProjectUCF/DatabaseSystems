@@ -3,11 +3,11 @@
 import Dashboard from "./Dashboard"
 import Login from "./Login"
 import Register from "./Register"
-//import PrivateRoute from "./PrivateRoute";
+import PrivateRoute from "./PrivateRoute";
 import React from 'react';
 import { Container } from 'react-bootstrap'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import PrivateRoute from "./PrivateRoute";
+import UnauthenticatedRoute from "./UnauthenticatedRoute";
 /** ------------------------------------------------------- */
 
 /**
@@ -23,9 +23,10 @@ export default function App() {
             <div>
                 <Router>
                     <Routes>
-                        <Route path="/" element={<PrivateRoute> <Dashboard/> </PrivateRoute>}/>
-                        <Route path="/Login" element={<Login/>}/>
-                        <Route path="/Signup" element={<Register/>}/>
+                        <Route exact path="/" element={<PrivateRoute> <Dashboard /> </PrivateRoute>}/>
+                        <Route path="/Login" element={<UnauthenticatedRoute> <Login /> </UnauthenticatedRoute>}/>
+                        <Route path="/Signup" element={<UnauthenticatedRoute> <Register /> </UnauthenticatedRoute>}/>
+                        <Route path="/Register" element={<UnauthenticatedRoute> <Register /> </UnauthenticatedRoute>}/>
                     </Routes>
                 </Router>
             </div>
