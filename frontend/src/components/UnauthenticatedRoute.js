@@ -17,7 +17,7 @@ import { Navigate } from "react-router-dom"
 export default function UnauthenticatedRoute({ children }) {
 
     // IsLoggedIn Status
-    const [isUnauthenticated, setIsUnauthenticated] = useState(checkLoggedInStatus())
+    const [isUnauthenticated] = useState(checkLoggedInStatus())
 
     /** Validate User Signed In status */
     function checkLoggedInStatus(){

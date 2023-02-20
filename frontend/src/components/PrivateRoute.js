@@ -17,7 +17,7 @@ import { Navigate } from "react-router-dom"
 export default function PrivateRoute({ children }) {
 
     // IsLoggedIn Status
-    const [isLoggedIn, setIsLoggedIn] = useState(checkLoggedInStatus())
+    const [isLoggedIn] = useState(checkLoggedInStatus())
 
     /** Validate User Signed In status */
     function checkLoggedInStatus(){

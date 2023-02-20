@@ -1,6 +1,7 @@
 /** ----------------------- IMPORTS ----------------------- */
-import { Container, Nav } from 'react-bootstrap';
-import { Navigate } from 'react-router';
+import '../styles/Dashboard.css'
+
+import SideBar from './SideBar'
 /** ------------------------------------------------------- */
 
 
@@ -13,12 +14,8 @@ export default function Dashboard() {
 
     // Return Dashboard elements to be displayed
     return (
-        <Container fluid>
-            <Nav className="navbar fixed-top">
-                <div className="container-fluid p-4 justify-content-center">
-                    DASHBOARD
-                </div>
-            </Nav>
-        </Container>
+        <div className='Dashboard'>
+            <SideBar />
+        </div>
     )
 }
