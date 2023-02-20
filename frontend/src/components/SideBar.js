@@ -2,9 +2,10 @@
 import '../styles/Sidebar.css'
 
 import { Avatar } from '@mui/material';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { SideBarData } from './SideBarData'
 import { USERNAME } from '../constants/DatabaseConstants'
+import SearchComponent from './SearchComponent';
 /** ------------------------------------------------------- */
 
 /**
@@ -14,6 +15,21 @@ import { USERNAME } from '../constants/DatabaseConstants'
  * @returns Sidebar Component
  */
 export default function SideBar() {
+
+    // useStates for SideBar
+    const [extendSearchComponent, setExtendSearchComponent] = useState(false)
+    const [currentSearchStyle, setCurrentSearchStyle] = useState('')
+
+    /**
+     * useEffect triggered each time the extendSearchComponent changes (when
+     *      search button is clicked)
+     */
+    useEffect(() => {
+
+        // Move the other divs down to make room for search's dropdown
+        extendSearchComponent ? setCurrentSearchStyle('search') : setCurrentSearchStyle('')
+
+    }, [extendSearchComponent])
 
     /**
      * Utility function to get the Username
@@ -57,18 +73,20 @@ export default function SideBar() {
                 {SideBarData.map((value, key) => {
                     return (
                         // Individual option rows. Uses SideBarData.js for its data
-                        <li 
-                        key={key} 
-                        className='row'
-                        id={window.location.pathname === value.link ? "active" : ""}
-                        onClick={() => { if (value.title !== "Search") window.location.pathname = value.link }}
-                        >
-                            {" "}
-                            <div id='icon'>{value.icon}</div> {" "}
-                            <div id='title'>
-                                {value.title}
-                            </div>
-                        </li>
+                        <div key={key}>
+                            <li 
+                            className='row'
+                            id={value.title !== "Search" && window.location.pathname === value.link ? "active" : currentSearchStyle }
+                            onClick={() => { if (value.title !== "Search") window.location.pathname = value.link; else setExtendSearchComponent(!extendSearchComponent) }}
+                            >
+                                {" "}
+                                <div id='icon'>{value.icon}</div> {" "}
+                                <div id='title'>{value.title}</div>
+                            </li>
+
+                            {/** Extend Search component if search is clicked */}
+                            { extendSearchComponent && value.title === 'Search' && <SearchComponent /> }
+                        </div>
                     )
                 })}
             </ul>
