@@ -13,7 +13,7 @@ const usersRouter = express.Router()
  */
 usersRouter.get("/", (req, res) => {
     // Prepare GET Query
-    const q = "SELECT * FROM " + userTableConstant
+    const q = "SELECT * FROM user" 
 
     // Query the database
     db.query(q, (err, data) => {

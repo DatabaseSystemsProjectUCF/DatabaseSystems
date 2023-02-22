@@ -1,9 +1,7 @@
 /** Import Bcrypt */
 const bcrypt = require("bcrypt")
-
 /** Import Database Connection */
 const db = require("./../Database")
-
 /** DB Constants */
 const { USERTABLE, 
         USERNAME } = require("../constants/DatabaseConstants")
@@ -33,7 +31,7 @@ loginRouter.post("/", (req, res) => {
     const password = req.body.password
 
     // Prepare DB Query
-    const q = "SELECT * FROM " + USERTABLE + " WHERE " + USERNAME + " = ?;"
+    const q = "SELECT * FROM user" 
 
     // Query the database
     db.query(q, 
