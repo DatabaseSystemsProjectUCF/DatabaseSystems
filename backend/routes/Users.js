@@ -5,10 +5,10 @@ const UserController = require('../controllers/UserController');
 
 // Define your endpoints
 // Login endpoint
-router.get('/login', login_handler);
+router.get('/login', UserController.login_handler);
 
 //Sign up endpoint
-router.post('/sign up', signup_handler);
+router.post('/sign up', UserController.signup_handler);
 
 module.exports = router;
 
