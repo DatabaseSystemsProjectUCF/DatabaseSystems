@@ -10,10 +10,10 @@ const mysql = require("mysql")
  *      database:   Which DB to access
  */
 const db_er = mysql.createConnection({
-    host: "10.32.248.112",
-    user: "root",
+    host: "localhost",
+    user: "danielaO",
     password: "password",
-    database: "vu"
+    database: "dbproject"
 })
 
 /** Export DB Connection */
