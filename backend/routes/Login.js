@@ -15,13 +15,9 @@ const db = require("./../Database")
 //         USERNAME } = require("../constants/DatabaseConstants")
 // /** DB Errors */
 // const { NO_USERNAME_OR_PASSWORD } = require("../constants/DatabaseErrors")
-/** DB Constants */
-const { USERTABLE, USERNAME } = require("../constants/DatabaseConstants");
-/** DB Errors */
-const { NO_USERNAME_OR_PASSWORD } = require("../constants/DatabaseErrors");
 
 // /** Import Express */
-// const express = require("express");
+// const express = require("express")
 
 // /** Instantiate usersRouter */
 // const loginRouter = express.Router()
