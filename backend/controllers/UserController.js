@@ -7,6 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//LOGIN
 const login_handler = async (req, res) => {
   // get the username and password from the request
   const { email, password } = req.body;
@@ -36,6 +37,7 @@ const login_handler = async (req, res) => {
   });
 };
 
+//REGISTER
 const register_handler = async (req, res) => {
   //get user information
   const { email, password, first_name, last_name } = req.body;
