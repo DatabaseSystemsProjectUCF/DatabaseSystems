@@ -1,8 +1,8 @@
 /** Import Bcrypt */
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt")
 
 /** Import Database Connection */
-const db = require("./../Database");
+const db = require("./../Database")
 
 
 
