@@ -43,7 +43,8 @@ const join_rso_handler = (req, res) => {
         res.status(200).send({message: "Successfully joined to the RSO!!"})
 
     }));
-
 }
+
+
 
 module.exports = {join_rso_handler};
