@@ -18,46 +18,45 @@ const join_rso_handler = async (req, res) => {
 
   //verify the student exists in the database
   await connection.query(verify_query1, [id], (err, results) => {
-    if (err) res.status(403).json({success: false, message: err.sqlMessage});
+    if (err) {
+      error_code = 0;
+    }
 
     //the student is not in the database
     if (results[0] == null) {
-        
-        error_code = 1;
-      //res.status(401).send({ error: "User not found" });
+      error_code = 1;
     }
-
-    //else, the student was found so verify the rso id
   });
 
   //verify the rso exists in the database
   await connection.query(verify_query2, [rso_id], (err, results) => {
-    if (err) res.status(403).json({success: false, message: err.sqlMessage});
+    if (err) {
+      error_code = 0;
+    }
 
     //the rso is not in the database
     if (results[0] == null) {
-        
-        error_code = 2;
-        //res.status(401).send({ error: "RSO not found" });
+      error_code = 2;
     }
-
-    //else, the rso was found, now add row to the joins table
   });
 
   //Throw error if any before attepting to join the student to the rso
-  if(error_code === 1){
+  if (error_code === 0) {
+    res.status(403).json({ success: false, message: err.sqlMessage });
+  } else if (error_code === 1) {
     res.status(401).json({ success: false, message: "User not found" });
-  }
-  else if(error_code === 2){
+  } else if (error_code === 2) {
     res.status(401).json({ success: false, message: "RSO not found" });
   }
 
   //add a row in the joins table, (student joins rso)
   await connection.query(query, [rso_id, id], (err) => {
-    if (err) res.status(403).json({success: false, message: err.sqlMessage});
+    if (err) res.status(403).json({ success: false, message: err.sqlMessage });
 
     //successful insertion
-    res.status(200).json({ success: true, message: "Successfully joined to the RSO!!" });
+    res
+      .status(200)
+      .json({ success: true, message: "Successfully joined to the RSO!!" });
   });
 };
 
