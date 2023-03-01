@@ -5,43 +5,47 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const join_rso_handler = async (req, res) => {
+  //get information from the request
+  const { id } = req.body;
+  const { rso_id } = req.param;
 
-const join_rso_handler = (req, res) => {
-    //get information from the request
-    const {id} = req.body;
-    const {rso_id} = req.param;
+  const verify_query1 = `SELECT * FROM students WHERE id = ?`;
+  const verify_query2 = `SELECT * FROM rso WHERE rso_id = ?`;
+  const query = `INSERT INTO joins (rso_id, id) VALUES (?, ?)`;
 
-    //verify the rso id and the student id are valid
-    const verify_query1 = `SELECT * FROM students WHERE id = ?`;
-    const verify_query2 = `SELECT * FROM rso WHERE rso_id = ?`;
-    const query = `INSERT INTO joins (rso_id, id) VALUES (?, ?)`;
+  //verify the student exists in the database
+  await connection.query(verify_query1, [id], (err, results) => {
+    if (err) throw err;
 
-    connection.query(verify_query1, [id], (err, results) => {
-        if(err) throw err;
+    //the student is not in the database
+    if (results[0] == null) {
+      res.status(401).send({ error: "User not found" });
+    }
 
-        //the student is not in the database
-        if(results[0] == null){
-            res.status(401).send({ error: "User not found" });
-        }
+    //else, the student was found so verify the rso id
+  });
 
-        //else, the student was found so verify the rso id
-    }).then(connection.query(verify_query2, [rso_id], (err, results) => {
-        if(err) throw err;
+  //verify the rso exists in the database
+  await connection.query(verify_query2, [rso_id], (err, results) => {
+    if (err) throw err;
 
-        //the rso is not in the database
-        if(results[0] == null){
-            res.status(401).send({ error: "RSO not found" });
-        }
+    //the rso is not in the database
+    if (results[0] == null) {
+      res.status(401).send({ error: "RSO not found" });
+    }
 
-        //else, the rso was found, now add row to the joins table
-    })).then(connection.query(query, [rso_id, id], (err, results) => {
-        if(err) throw err;
+    //else, the rso was found, now add row to the joins table
+  });
 
-        //successful insertion
-        res.status(200).send({message: "Successfully joined to the RSO!!"})
+  //add a row in the joins table, (student joins rso)
+  await connection.query(query, [rso_id, id], (err) => {
+    if (err) throw err;
 
-    }));
-}
+    //successful insertion
+    res.status(200).send({ message: "Successfully joined to the RSO!!" });
+  });
+};
 
 const create_rso_handler = (req, res) =>{
 
@@ -57,8 +61,8 @@ const create_rso_handler = (req, res) =>{
     const query = `INSERT INTO rso (name, description, id) VALUES (?, ?, ?)`;
 
     //verify the emails first
-    connection.query(verify_email1, email1, (err, results) => {
-        if(err) return res.status(403).json({ success: false, message: err.sqlMessage });
+  connection.query(verify_email1, email1, (err, results) => {
+    if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
         //the user is not in the database
         if(results[0] == null){
