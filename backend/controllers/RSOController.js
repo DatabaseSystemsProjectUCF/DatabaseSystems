@@ -10,13 +10,13 @@ const join_rso_handler = async (req, res) => {
   const { id } = req.body;
   const { rso_id } = req.param;
 
-  const verify_query1 = `SELECT * FROM students WHERE id = ?`;
+  const verify_query1 = `SELECT * FROM users WHERE id = ?`;
   const verify_query2 = `SELECT * FROM rso WHERE rso_id = ?`;
   const query = `INSERT INTO joins (rso_id, id) VALUES (?, ?)`;
 
   //verify the student exists in the database
   await connection.query(verify_query1, [id], (err, results) => {
-    if (err) throw err;
+    if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
     //the student is not in the database
     if (results[0] == null) {
@@ -28,7 +28,7 @@ const join_rso_handler = async (req, res) => {
 
   //verify the rso exists in the database
   await connection.query(verify_query2, [rso_id], (err, results) => {
-    if (err) throw err;
+    if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
     //the rso is not in the database
     if (results[0] == null) {
@@ -40,15 +40,14 @@ const join_rso_handler = async (req, res) => {
 
   //add a row in the joins table, (student joins rso)
   await connection.query(query, [rso_id, id], (err) => {
-    if (err) throw err;
+    if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
     //successful insertion
-    res.status(200).send({ message: "Successfully joined to the RSO!!" });
+    return res.status(200).send({ message: "Successfully joined to the RSO!!" });
   });
 };
 
 const create_rso_handler = (req, res) =>{
-
     //get data from the user
     const {name, description, admin_email, email1, email2, email3} = req.body;
 
@@ -64,21 +63,21 @@ const create_rso_handler = (req, res) =>{
   connection.query(verify_email1, email1, (err, results) => {
     if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
-        //the user is not in the database
+        //user 1 is not in the database
         if(results[0] == null){
             return res.status(401).json({ success: false, message: "User 1 not found" });
         }
         connection.query(verify_email2, email2, (err, results) =>{
             if(err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
-            //the user is not in the database
+            //user 2 is not in the database
             if(results[0] == null){
                 return res.status(401).json({ success: false, message: "User 2 not found" });
             }
             connection.query(verify_email3, email3, (err, results)=>{
                 if(err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
-                //the user is not in the database
+                //user 3 is not in the database
                 if(results[0] == null){
                     return res.status(401).json({ success: false, message: "User 3 not found" });
                 }
