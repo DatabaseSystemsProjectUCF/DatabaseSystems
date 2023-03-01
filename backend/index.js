@@ -2,6 +2,8 @@
 const express = require("express")
 const cors = require("cors")
 const UserRoutes = require('./routes/Users');
+const RsoRoutes = require('./routes/RSO');
+const UnivRoutes = require('./routes/University');
 
 /** Express Config */
 const app = express()
@@ -10,15 +12,8 @@ const PORT = 8800
 app.use(express.json())
 app.use(cors())
 app.use('/user', UserRoutes);
-
-
-// /** Login Route */
-// const loginRoute = require("./routes/Login")
-// app.use("/login", loginRoute)
-
-// /** Signup Route */
-// const signupRoute = require("./routes/Register")
-// app.use("/register", signupRoute)
+app.use('/rso', RsoRoutes);
+app.use('/university', UnivRoutes);
 
 /** App Listener */
 app.listen(PORT, ()=>{
