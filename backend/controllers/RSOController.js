@@ -49,6 +49,8 @@ const join_rso_handler = async (req, res) => {
     res.status(401).json({ success: false, message: "RSO not found" });
   }
 
+  return;
+
   //add a row in the joins table, (student joins rso)
   await connection.query(query, [rso_id, id], (err) => {
     if (err) res.status(403).json({ success: false, message: err.sqlMessage });
