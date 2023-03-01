@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const join_rso_handler = async (req, res) => {
   //get information from the request
   const { id } = req.body;
-  const { rso_id } = req.param;
+  const { rso_id } = req.query;
 
   const verify_query1 = `SELECT * FROM users WHERE id = ?`;
   const verify_query2 = `SELECT * FROM rso WHERE rso_id = ?`;

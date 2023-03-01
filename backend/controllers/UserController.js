@@ -44,13 +44,13 @@ const register_handler = async (req, res) => {
   const { email, password, first_name, last_name } = req.body;
   const hashedPass = await bcrypt.hash(password, saltRounds);
   const email_domain = email.substring(email.indexOf("@"), email.length);
-  const values = [email, hashedPass, first_name, last_name, level_id];
   const level_id = 0;
+  const values = [email, hashedPass, first_name, last_name, level_id];
 
   //create query
   const query = `INSERT INTO users (email, password, first_name, last_name, level_id) VALUES (?, ?, ?, ?, ?)`;
   const verify_univ = `SELECT univ_id FROM university WHERE email_domain = ?`;
-  const stud_query = `INSERT INTO students (id, univ_iv) VALUES (?, ?)`;
+  const stud_query = `INSERT INTO students (id, univ_id) VALUES (?, ?)`;
   const query2 = `SELECT id FROM users WHERE email = ?`;
 
   //execute query to verify there is an university created with the same email_domain
@@ -62,6 +62,7 @@ const register_handler = async (req, res) => {
         return res.status(401).json({ success: false, message: "University with email domain doesn't exist"});
       }
       const univ_id = result[0].univ_id;
+      console.log(univ_id)
       //execute query to create new user
       connection.query(query, values, (error, result)=>{
         if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
@@ -71,6 +72,7 @@ const register_handler = async (req, res) => {
           if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
 
           const id = result[0].id;
+          console.log(id)
           //add user to students table
           connection.query(stud_query, [id, univ_id], (error,result)=>{
             if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
