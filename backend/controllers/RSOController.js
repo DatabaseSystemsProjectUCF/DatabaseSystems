@@ -17,13 +17,17 @@ const join_rso_handler = async (req, res) => {
   const verify_query2 = `SELECT * FROM rso WHERE rso_id = ?`;
   const query = `INSERT INTO joins (rso_id, id) VALUES (?, ?)`;
 
+  var error_code = -1;
+
   //verify the student exists in the database
   await connection.query(verify_query1, [id], (err, results) => {
-    if (err) throw err;
+    if (err) res.status(403).json({success: false, message: err.sqlMessage});
 
     //the student is not in the database
     if (results[0] == null) {
-      res.status(401).send({ error: "User not found" });
+        
+        error_code = 1;
+      //res.status(401).send({ error: "User not found" });
     }
 
     //else, the student was found so verify the rso id
@@ -31,22 +35,32 @@ const join_rso_handler = async (req, res) => {
 
   //verify the rso exists in the database
   await connection.query(verify_query2, [rso_id], (err, results) => {
-    if (err) throw err;
+    if (err) res.status(403).json({success: false, message: err.sqlMessage});
 
     //the rso is not in the database
     if (results[0] == null) {
-      res.status(401).send({ error: "RSO not found" });
+        
+        error_code = 2;
+        //res.status(401).send({ error: "RSO not found" });
     }
 
     //else, the rso was found, now add row to the joins table
   });
 
+  //Throw error if any before attepting to join the student to the rso
+  if(error_code === 1){
+    res.status(401).json({ success: false, message: "User not found" });
+  }
+  else if(error_code === 2){
+    res.status(401).json({ success: false, message: "RSO not found" });
+  }
+
   //add a row in the joins table, (student joins rso)
   await connection.query(query, [rso_id, id], (err) => {
-    if (err) throw err;
+    if (err) res.status(403).json({success: false, message: err.sqlMessage});
 
     //successful insertion
-    res.status(200).send({ message: "Successfully joined to the RSO!!" });
+    res.status(200).json({ success: true, message: "Successfully joined to the RSO!!" });
   });
 };
 
