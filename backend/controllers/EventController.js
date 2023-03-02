@@ -16,7 +16,7 @@ const create_event_handler = async (req, res) => {
     
     
     //I have to verify if the location already exists in the DB.
-    const verify_location = `SELECT * FROM location WHERE latitude = ? AND longitud = ?`;
+    const verify_location = `SELECT loc_id FROM location WHERE latitude = ? AND longitud = ?`;
 
     await connection.query(verify_location, [lat, long], async (err, results) => {
         if(err) error_code = 0;
@@ -29,11 +29,13 @@ const create_event_handler = async (req, res) => {
                 if(err) error_code = 0;
 
                 //Location was added succesfully!!
+                console.log("here ")
             });
         }
-
+        const location_1 = results[0];
+        console.log(location_1)
         //get the id of the location into a variable
-        location_id = results[0].loc_id;
+        location_id = location_1.loc_id;
 
     });
 

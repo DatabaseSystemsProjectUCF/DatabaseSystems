@@ -62,7 +62,6 @@ const register_handler = async (req, res) => {
         return res.status(401).json({ success: false, message: "University with email domain doesn't exist"});
       }
       const univ_id = result[0].univ_id;
-      console.log(univ_id)
       //execute query to create new user
       connection.query(query, values, (error, result)=>{
         if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
@@ -72,7 +71,6 @@ const register_handler = async (req, res) => {
           if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
 
           const id = result[0].id;
-          console.log(id)
           //add user to students table
           connection.query(stud_query, [id, univ_id], (error,result)=>{
             if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
