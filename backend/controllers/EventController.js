@@ -18,29 +18,26 @@ const create_event_handler = async (req, res) => {
     //I have to verify if the location already exists in the DB.
     const verify_location = `SELECT * FROM location WHERE latitude = ? AND longitud = ?`;
 
-    await connection.query(verify_location, [lat, long], async (err, results) => {
+    await connection.query(verify_location, [lat, long], (err, results) => {
         if(err) error_code = 0;
 
-        if(results[0] == null){
-            //IF the location has not been created THEN I have to create a location object in the database before creating the event object
-            //to do this I have to insert a row in "locations"
-            const create_location = `INSERT INTO location (name, latitude, longitude) VALUES (?, ?, ?)`;
-            await connection.query(create_location, [name_loc, lat, long], (err, results) => {
-                if(err) error_code = 0;
-
-                //Location was added succesfully!!
-            });
+        if(results[0] != null){
+            //get the id of the location into a variable
+            location_id = results[0].loc_id;
         }
+    });
 
-        
+    if(location_id == -1){
+        //IF the location has not been created THEN I have to create a location object in the database before creating the event object
+        //to do this I have to insert a row in "locations"
+        const create_location = `INSERT INTO location (name, latitude, longitude) VALUES (?, ?, ?)`;
+        await connection.query(create_location, [name_loc, lat, long], (err, results) => {
+            if(err) error_code = 0;
 
-    }).then((results) => {
-        //get the id of the location into a variable
-        location_id = results[0].loc_id;
-    })
+            //Location was added succesfully!!
+        });
+    }
 
-    
-    
 
     //I also have to verify the existence of an RSO if the event is an rso event.
     if(type == 'rso'){
