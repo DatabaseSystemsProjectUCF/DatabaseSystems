@@ -5,6 +5,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//JOIN RSO
 const join_rso_handler = async (req, res) => {
   //get information from the request
   const { id } = req.body;
@@ -57,6 +58,7 @@ const join_rso_handler = async (req, res) => {
   }
 };
 
+//CREATE RSO
 const create_rso_handler = (req, res) => {
   //get data from the user
   const { name, description, admin_email, email1, email2, email3 } = req.body;
@@ -71,73 +73,48 @@ const create_rso_handler = (req, res) => {
 
   //verify the emails first
   connection.query(verify_email1, email1, (err, results) => {
-    if (err)
-      return res.status(403).json({ success: false, message: err.sqlMessage });
+    if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
     //user 1 is not in the database
     if (results[0] == null) {
-      return res
-        .status(401)
-        .json({ success: false, message: "User 1 not found" });
+      return res.status(401).json({ success: false, message: "User 1 not found" });
     }
     connection.query(verify_email2, email2, (err, results) => {
-      if (err)
-        return res
-          .status(403)
-          .json({ success: false, message: err.sqlMessage });
+      if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
       //user 2 is not in the database
       if (results[0] == null) {
-        return res
-          .status(401)
-          .json({ success: false, message: "User 2 not found" });
+        return res.status(401).json({ success: false, message: "User 2 not found" });
       }
       connection.query(verify_email3, email3, (err, results) => {
-        if (err)
-          return res
-            .status(403)
-            .json({ success: false, message: err.sqlMessage });
+        if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
         //user 3 is not in the database
         if (results[0] == null) {
-          return res
-            .status(401)
-            .json({ success: false, message: "User 3 not found" });
+          return res.status(401).json({ success: false, message: "User 3 not found" });
         }
       });
     });
   });
   //verify admins email
   connection.query(verify_admin, admin_email, (err, results) => {
-    if (err)
-      return res.status(403).json({ success: false, message: err.sqlMessage });
+    if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
     //the admin is not in the database
     if (results[0] == null) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Admin not found" });
+      return res.status(401).json({ success: false, message: "Admin not found" });
     }
     const id = results[0].id;
-    console.log(id);
     //create new rso
     connection.query(query, [name, description, id], (err, results) => {
-      if (err)
-        return res
-          .status(403)
-          .json({ success: false, message: err.sqlMessage });
+      if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
       //change level id from 0 to 1 for the new admin
       connection.query(make_admin, admin_email, (err, results) => {
-        if (err)
-          return res
-            .status(403)
-            .json({ success: false, message: err.sqlMessage });
+        if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
 
         //successful insertion
-        return res
-          .status(200)
-          .json({ success: true, message: "Successfully created an RSO!!" });
+        return res.status(200).json({ success: true, message: "Successfully created an RSO!!" });
       });
     });
   });
