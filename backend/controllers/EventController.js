@@ -32,12 +32,22 @@ const create_event_handler = async (req, res) => {
                 console.log("here ")
             });
         }
+<<<<<<< HEAD
         const location_1 = results[0];
         console.log(location_1)
         //get the id of the location into a variable
         location_id = location_1.loc_id;
 
     });
+=======
+
+        
+
+    }).then((results) => {
+        //get the id of the location into a variable
+        location_id = results[0].loc_id;
+    })
+>>>>>>> 880f833fa1935f38c05f14c4ee6b1d60e91308ef
 
     
     
