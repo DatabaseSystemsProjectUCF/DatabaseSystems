@@ -32,10 +32,12 @@ const create_event_handler = async (req, res) => {
             });
         }
 
+        
+
+    }).then((results) => {
         //get the id of the location into a variable
         location_id = results[0].loc_id;
-
-    });
+    })
 
     
     
