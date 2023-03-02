@@ -17,7 +17,15 @@ const create_event_handler = async (req, res) => {
     
     //I have to verify if the location already exists in the DB.
     const verify_location = `SELECT * FROM location WHERE latitude = ? AND longitud = ?`;
+    const location = await connection.query(verify_location, [lat, long], (err) =>{
+        if(err) error_code = 0;
+    });
 
+    if(location != null){
+        console.log(`the location is ${location}`);
+        location_id = location.loc_id;
+    }
+    /*
     await connection.query(verify_location, [lat, long], (err, results) => {
         if(err) error_code = 0;
 
@@ -26,7 +34,7 @@ const create_event_handler = async (req, res) => {
             location_id = results[0].loc_id;
         }
     });
-
+    */
     if(location_id == -1){
         //IF the location has not been created THEN I have to create a location object in the database before creating the event object
         //to do this I have to insert a row in "locations"
