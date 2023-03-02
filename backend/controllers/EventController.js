@@ -21,22 +21,10 @@ const create_event_handler = async (req, res) => {
     await connection.query(verify_location, [lat, long], (err, results) => {
         if(err) error_code = 0;
 
-<<<<<<< HEAD
-        if(results[0] == null){
-            //IF the location has not been created THEN I have to create a location object in the database before creating the event object
-            //to do this I have to insert a row in "locations"
-            const create_location = `INSERT INTO location (name, latitude, longitude) VALUES (?, ?, ?)`;
-            await connection.query(create_location, [name_loc, lat, long], (err, results) => {
-                if(err) error_code = 0;
-
-                //Location was added succesfully!!
-                console.log("here ")
-            });
-=======
         if(results[0] != null){
             //get the id of the location into a variable
+            console.log("here")
             location_id = results[0].loc_id;
->>>>>>> 64180cfbfa4c8b33d730373c6d17a053f53f59fe
         }
     });
 
@@ -48,6 +36,7 @@ const create_event_handler = async (req, res) => {
             if(err) error_code = 0;
 
             //Location was added succesfully!!
+            location_id = results[0].loc_id;
         });
     }
 
