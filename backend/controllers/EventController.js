@@ -87,6 +87,47 @@ const create_event_handler = async (req, res) => {
   }
 }
 
+const create_comment_handler = async(req,res)=>{
+  //get data from user
+  const {id, content, rating} = req.body;
+  const {event_id} = req.query;
+
+  //create queries
+  const query = `INSERT INTO comments (content, rating, id, event_id) VALUES (?, ?, ?, ?)`;
+  const verify_event = `SELECT * FROM event WHERE event_id = ?`;
+
+  //execute query to verify that event exists
+  connection.query(verify_event, event_id, (error, result) => {
+    if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
+    else {
+      if(result[0]==null){
+        return res.status(401).json({ success: false, message: "Event doesn't exist"});
+      }
+      //execute query to create new comment
+      connection.query(query, [content, rating, id, event_id], (error, result)=>{
+        if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
+
+        return res.status(200).json({ "success" : true, "message": "Comment created successfully" });
+      });
+    }
+  });
+}
+
+const edit_comment_handler = async(req,res)=>{
+
+}
+
+const display_comments_handler = async(req,res) =>{
+  //create query
+  const query = `SELECT * FROM comments`;
+
+  //execute query to display all events
+  connection.query(query, (error, result) => {
+    if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
+    else 
+      return res.status(200).json({ "success" : true, "message": result });
+  });
+}
 //HOW TO HANDLE PRIVACY:
 //PUBLIC:
 //any student can see the event, no verification required
@@ -96,4 +137,4 @@ const create_event_handler = async (req, res) => {
 //RSO:
 //only students belonging to an rso can view the event.
 
-module.exports = { create_event_handler };
+module.exports = { create_event_handler, create_comment_handler, edit_comment_handler, display_comments_handler};

@@ -28,12 +28,12 @@ const login_handler = async (req, res) => {
           res.status(200).json({ "success" : true, "message": "Login successful" });
         } else {
           // If the passwords don't match, return an error message
-          res.status(401).json({ "success" : true, "message": "Invalid password" });
+          res.status(401).json({ "success" : false, "message": "Invalid password" });
         }
       });
     } else {
       // If the user is not found, return an error message
-      res.status(401).send({ "success" : true, "message": "User not found" });
+      res.status(401).send({ "success" : false, "message": "User not found" });
     }
   });
 };
