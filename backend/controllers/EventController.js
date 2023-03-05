@@ -16,61 +16,29 @@ const create_event_handler = async (req, res) => {
 
 
   //I have to verify if the location already exists in the DB.
-  /*
   const verify_location = `SELECT loc_id FROM location WHERE latitude = ? AND longitud = ?`;
-  const location = await connection.query(verify_location, [lat, long], (err, results) =>{
+
+  await connection.query(verify_location, [lat, long], (err, results) =>{
       if(err) error_code = 0;
 
-      return json(results)
+      if(results[0] != null){
+        location_id = results[0].loc_id;
+        console.log(`the location was found and its id is ${location_id}`);
+      }
+
   });
   
-  if(location != null){
-      console.log(`the location is ${location}`);
-      location_id = location.loc_id;
-  }
-  */
-  async function verifyLocation(lat, long) {
-    const verify_location =
-      `SELECT id FROM locations WHERE lat = ? AND long = ?`;
-    try {
-      const results = await query(verify_location, [lat, long]);
-      if (results.length > 0) {
-        location_id = results[0];
-        console.log(`Location found with ID: ${location_id}`);
-      } else {
-        console.log("Location not found");
-      }
-    } catch (err) {
-      if (err) error_code = 0;
-    }
-  }
+  const create_location = `INSERT INTO location (name, latitude, longitude) VALUES (?, ?, ?)`;
 
-  async function createLocation(name, lat, long){
-    const create_location = `INSERT INTO location (name, latitude, longitude) VALUES (?, ?, ?)`;
-    try{
-      const results = await connection.query(create_location, [name_loc, lat, long]);
-      if(results.length > 0){
+  if(location == -1){
+      console.log(`the location was not found`);
+      await connection.query(create_location, [name_loc, lat, long], (err, results) =>{
+        if(err) error_code = 0;
+
         location_id = results[0].loc_id;
-        console.log(`Location was created with ID: ${location_id}`);
-      }
-      else{
-        console.log("Location was not created");
-      }
-    }
-    catch (err) {
-      if (err) error_code = 0;
-    }
+        console.log(`the location was successfully created an its id is ${location_id}`);
+      });
   }
-
-  verifyLocation(lat, long);
-
-  if (location_id == -1) {
-    //IF the location has not been created THEN I have to create a location object in the database before creating the event object
-    //to do this I have to insert a row in "locations"
-    createLocation(name_loc, lat, long);
-  }
-
-  console.log(`the location id is ${location_id}`);
 
 
   //I also have to verify the existence of an RSO if the event is an rso event.
@@ -83,6 +51,7 @@ const create_event_handler = async (req, res) => {
       if (result[0] == null) error_code = 1;
       //ELSE get the id of the rso into a variable
       else rso_id = result[0].rso_id;
+      console.log(`the rso was found and its id is ${rso_id}`);
     });
   }
 

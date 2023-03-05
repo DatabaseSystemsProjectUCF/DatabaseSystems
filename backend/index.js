@@ -17,9 +17,16 @@ app.use('/rso', RsoRoutes);
 app.use('/university', UnivRoutes);
 app.use('/events', EventRoutes);
 
+// function to use async await on the routes
+const asyncHandler = (fun) => (req, res, next) => {
+    Promise.resolve(fun(req, res, next)).catch(next);
+}
+
 /** App Listener */
 app.listen(PORT, ()=>{
     console.log('Connected to backend on Port: ' + PORT)
 })
+
+module.exports = { asyncHandler };
 
 
