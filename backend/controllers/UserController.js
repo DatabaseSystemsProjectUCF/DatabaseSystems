@@ -25,7 +25,7 @@ const login_handler = async (req, res) => {
 
         if (isMatch) {
           // If the passwords match, return a success message
-          res.status(200).json({ "success" : true, "message": "Login successful" });
+          res.status(200).json({ "success" : true, "message": "Login successful", "user": user });
         } else {
           // If the passwords don't match, return an error message
           res.status(401).json({ "success" : false, "message": "Invalid password" });
