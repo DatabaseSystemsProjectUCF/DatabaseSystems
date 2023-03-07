@@ -17,69 +17,67 @@ const create_event_handler = async (req, res) => {
   //I have to verify if the location already exists in the DB.
   const verify_location = `SELECT loc_id FROM location WHERE latitude = ? AND longitud = ?`;
 
-  const find_location = await connection.promise().query(verify_location, [lat, long], (err, results, fields) => {
+  await connection.promise().query(verify_location, [lat, long], (err) => {
     if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+  }).then(async (result) => {
+    //If location does not exist, create a location
+    if (result[0].length == 0) {
+      const create_location = `INSERT INTO location (name, latitude, longitud) VALUES (?, ?, ?)`;
+      await connection.promise().query(create_location, [name_loc, lat, long], (err) => {
+        if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+      }).then((result) => {
+        //Then get its ID
+        location_id = result[0].insertId;
+      });
+    }
+    else {
+      //If location is already in the DB, get its ID
+      //console.log(JSON.stringify(result));
+      location_id = result[0][0].loc_id;
+    }
   });
-
-  //No location was found, so we have to create a new location
-  if (find_location[0] != null) {
-    const create_location = `INSERT INTO location (name, latitude, longitud) VALUES (?, ?, ?)`;
-    const location_insertion = await connection.promise().query(create_location, [name_loc, lat, long], (err, results, fields) => {
-      if (err) res.status(403).json({ success: false, message: err.sqlMessage });
-    });
-
-    location_id = location_insertion[0].insertId;
-  }
-  else {
-    //The location is already in the DB
-    location_id = find_location[0].loc_id;
-  }
-
   // At this point we have the location ID in the location_id var
   // console.log(`the location ID  out of conditional is ${location_id}`);
 
-  //I also have to verify the existence of an RSO if the event is an rso event.
   if (type == 'rso') {
+    //Verify the RSO exists in the DB
     const verify_rso = `SELECT * FROM rso WHERE name = ?`;
-    const rso = await connection.promise().query(verify_rso, rso_name, (err, results, fields) => {
+    await connection.promise().query(verify_rso, rso_name, (err) => {
       if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+    }).then(async (result) => {
+      //No RSO was found in the DB, return 401
+      if (result[0].length == 0) {
+        res.status(401).json({ success: false, message: "RSO was not found" });
+      }
+      else {
+        //The RSO was found, get its ID and prepare the insertion query for execution
+        rso_id = result[0].rso_id;
+
+        const create_event_rso = `INSERT INTO event (loc_id, rso_id, name, description, category, type, time, date, phone, email) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        connection.query(create_event_rso, [location_id, rso_id, name, description, category, type, time, date, phone, email],
+          (err) => {
+            if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+
+            else res.status(200).json({ success: true, message: "Event was successfully created!" });
+          });
+      }
     });
-
-    if (rso[0] == null) {
-      //no rso was found, return 401
-      res.status(401).json({ success: false, message: "RSO was not found" });
-    }
-    else {
-      rso_id = rso[0].rso_id;
-
-      //Prepare query to insert the event into the DB.
-      const create_event_rso = `INSERT INTO event (loc_id, rso_id, name, description, category, type, time, date, phone, email) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-      connection.query(create_event_rso, [location_id, rso_id, name, description, category, type, time, date, phone, email],
-        (err, result) => {
-          if (err) res.status(403).json({ success: false, message: err.sqlMessage });
-
-          else res.status(200).json({ success: true, message: "Event was successfully created!" });
-        });
-
-
-    }
   }
-
+  // Public or Private event
   else {
-    //It is not an rso event so we prepare the query without the rso id
+    //Prepare the query without the rso id
     const create_event = `INSERT INTO event (loc_id, name, description, category, type, time, date, phone, email) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     connection.query(create_event, [location_id, name, description, category, type, time, date, phone, email],
-      (err, results, fields) => {
+      (err) => {
         if (err) res.status(403).json({ success: false, message: err.sqlMessage });
 
         else res.status(200).json({ success: true, message: "Event was successfully created!" });
       });
   }
-
 }
 
 const create_comment_handler = async(req,res)=>{
