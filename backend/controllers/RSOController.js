@@ -6,8 +6,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-
 //JOIN RSO
 const join_rso_handler = (req, res) => {
   //get information from the request
@@ -150,4 +148,12 @@ const create_rso_handler = (req, res) => {
   });
 };
 
-module.exports = { create_rso_handler, join_rso_handler };
+//DISPLAY RSO
+const display_rso_handler = (req, res) => {
+  //First get the ID of the RSO, maybe from query or params?
+  //Second, Try to get the RSO from the database
+  //If the promise is successful, Then we return everything to the front end, status 200
+  //Else, The RSO was not found on the database, return  a 401 "RSO not found"
+};
+
+module.exports = { create_rso_handler, join_rso_handler, display_rso_handler };
