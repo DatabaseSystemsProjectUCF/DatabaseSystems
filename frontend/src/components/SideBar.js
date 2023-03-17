@@ -100,7 +100,7 @@ export default function SideBar() {
                             </li>
 
                             {/** Extend Search component if search is clicked. Uses SearchComponent.js for it's data */}
-                            { extendSearchComponent && value.title === 'Search' && <SearchComponent  /> }
+                            { extendSearchComponent && value.title === 'Search' && <SearchComponent /> }
                         </div>
                     )
                 })}

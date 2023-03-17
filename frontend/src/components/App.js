@@ -4,6 +4,7 @@ import "../styles/App.css"
 import Dashboard from "./Dashboard"
 import Login from "./Login"
 import Register from "./Register"
+import RegisterAdmin from "./RegisterAdmin";    
 import PrivateRoute from "./PrivateRoute";
 import React from 'react';
 import RSO from "./RSO";
@@ -29,6 +30,7 @@ export default function App() {
                     <Route path="/Login" element={<UnauthenticatedRoute> <Login /> </UnauthenticatedRoute>}/>
                     <Route path="/Signup" element={<UnauthenticatedRoute> <Register /> </UnauthenticatedRoute>}/>
                     <Route path="/Register" element={<UnauthenticatedRoute> <Register /> </UnauthenticatedRoute>}/>
+                    <Route path="/RegisterAdmin" element={<UnauthenticatedRoute> <RegisterAdmin /> </UnauthenticatedRoute>}/>
                 </Routes>
             </Router>
         </div>
