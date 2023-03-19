@@ -1,5 +1,5 @@
 /** MYSQL Instance */
-const mysql = require("mysql")
+const mysql = require("mysql2")
 
 /**
  * Database Connection: Takes the following parameters:
