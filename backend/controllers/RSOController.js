@@ -1,12 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const connection = require("./../Database");
+//const connection = require("./../Database");
+const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //JOIN RSO
-const join_rso_handler = async (req, res) => {
+const join_rso_handler = (req, res) => {
   //get information from the request
   const { id } = req.body;
   const { rso_id } = req.query;
@@ -20,9 +21,9 @@ const join_rso_handler = async (req, res) => {
   var error_code = -1;
 
   //verify the student exists in the database
-  await connection.query(verify_query1, [id], (err, results) => {
-    if (err)  error_code = 0;
-    
+  connection.query(verify_query1, [id], (err, results) => {
+    if (err) error_code = 0;
+
     //the student is not in the database
     if (results[0] == null) {
       error_code = 1;
@@ -30,9 +31,9 @@ const join_rso_handler = async (req, res) => {
   });
 
   //verify the rso exists in the database
-  await connection.query(verify_query2, [rso_id], (err, results) => {
+  connection.query(verify_query2, [rso_id], (err, results) => {
     if (err) error_code = 0;
-    
+
     //the rso is not in the database
     if (results[0] == null) {
       error_code = 2;
@@ -48,11 +49,14 @@ const join_rso_handler = async (req, res) => {
     res.status(401).json({ success: false, message: "RSO not found" });
   } else {
     //add a row in the joins table, (student joins rso)
-    await connection.query(query, [rso_id, id], (err) => {
-      if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+    connection.query(query, [rso_id, id], (err) => {
+      if (err)
+        res.status(403).json({ success: false, message: err.sqlMessage });
       else {
         //successful insertion
-        res.status(200).json({ success: true, message: "Successfully joined to the RSO!!" });
+        res
+          .status(200)
+          .json({ success: true, message: "Successfully joined to the RSO!!" });
       }
     });
   }
@@ -72,52 +76,84 @@ const create_rso_handler = (req, res) => {
   const query = `INSERT INTO rso (name, description, id) VALUES (?, ?, ?)`;
 
   //verify the emails first
-  connection.query(verify_email1, email1, (err, results) => {
-    if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
+  connection.query(verify_email1, email1, async (err, results) => {
+    if (err)
+      return res.status(403).json({ success: false, message: err.sqlMessage });
 
     //user 1 is not in the database
     if (results[0] == null) {
-      return res.status(401).json({ success: false, message: "User 1 not found" });
+      return res
+        .status(401)
+        .json({ success: false, message: "User 1 not found" });
     }
     connection.query(verify_email2, email2, (err, results) => {
-      if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
+      if (err)
+        return res
+          .status(403)
+          .json({ success: false, message: err.sqlMessage });
 
       //user 2 is not in the database
       if (results[0] == null) {
-        return res.status(401).json({ success: false, message: "User 2 not found" });
+        return res
+          .status(401)
+          .json({ success: false, message: "User 2 not found" });
       }
       connection.query(verify_email3, email3, (err, results) => {
-        if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
+        if (err)
+          return res
+            .status(403)
+            .json({ success: false, message: err.sqlMessage });
 
         //user 3 is not in the database
         if (results[0] == null) {
-          return res.status(401).json({ success: false, message: "User 3 not found" });
+          return res
+            .status(401)
+            .json({ success: false, message: "User 3 not found" });
         }
       });
     });
   });
   //verify admins email
   connection.query(verify_admin, admin_email, (err, results) => {
-    if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
+    if (err)
+      return res.status(403).json({ success: false, message: err.sqlMessage });
 
     //the admin is not in the database
     if (results[0] == null) {
-      return res.status(401).json({ success: false, message: "Admin not found" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Admin not found" });
     }
     const id = results[0].id;
     //create new rso
     connection.query(query, [name, description, id], (err, results) => {
-      if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
+      if (err)
+        return res
+          .status(403)
+          .json({ success: false, message: err.sqlMessage });
 
       //change level id from 0 to 1 for the new admin
       connection.query(make_admin, admin_email, (err, results) => {
-        if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
+        if (err)
+          return res
+            .status(403)
+            .json({ success: false, message: err.sqlMessage });
 
         //successful insertion
-        return res.status(200).json({ success: true, message: "Successfully created an RSO!!" });
+        return res
+          .status(200)
+          .json({ success: true, message: "Successfully created an RSO!!" });
       });
     });
   });
 };
 
-module.exports = { join_rso_handler, create_rso_handler };
+//DISPLAY RSO
+const display_rso_handler = (req, res) => {
+  //First get the ID of the RSO, maybe from query or params?
+  //Second, Try to get the RSO from the database
+  //If the promise is successful, Then we return everything to the front end, status 200
+  //Else, The RSO was not found on the database, return  a 401 "RSO not found"
+};
+
+module.exports = { create_rso_handler, join_rso_handler, display_rso_handler };

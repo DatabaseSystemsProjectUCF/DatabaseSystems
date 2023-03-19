@@ -1,89 +1,82 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const connection = require("./../Database");
+//const connection = require("./../Database");
+const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const create_event_handler = async (req, res) => {
-  var error_code = -1;
-  var location_id = -1;
-  var rso_id = -1;
+  var location_id;
+  var rso_id;
 
   //Get info from the client:
   //Talk to Usman on best way to receive optional parameter rso_name !!
   const { rso_name, name, description, category, type, date, time, phone, email, name_loc, lat, long } = req.body;
 
-
   //I have to verify if the location already exists in the DB.
   const verify_location = `SELECT loc_id FROM location WHERE latitude = ? AND longitud = ?`;
 
-  await connection.query(verify_location, [lat, long], (err, results) =>{
-      if(err) error_code = 0;
-
-      if(results[0] != null){
-        location_id = results[0].loc_id;
-        console.log(`the location was found and its id is ${location_id}`);
-      }
-
-  });
-  
-  const create_location = `INSERT INTO location (name, latitude, longitude) VALUES (?, ?, ?)`;
-
-  if(location == -1){
-      console.log(`the location was not found`);
-      await connection.query(create_location, [name_loc, lat, long], (err, results) =>{
-        if(err) error_code = 0;
-
-        location_id = results[0].loc_id;
-        console.log(`the location was successfully created an its id is ${location_id}`);
+  await connection.promise().query(verify_location, [lat, long], (err) => {
+    if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+  }).then(async (result) => {
+    //If location does not exist, create a location
+    if (result[0].length == 0) {
+      const create_location = `INSERT INTO location (name, latitude, longitud) VALUES (?, ?, ?)`;
+      await connection.promise().query(create_location, [name_loc, lat, long], (err) => {
+        if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+      }).then((result) => {
+        //Then get its ID
+        location_id = result[0].insertId;
       });
-  }
-
-
-  //I also have to verify the existence of an RSO if the event is an rso event.
-  if (type == 'rso') {
-    const verify_rso = `SELECT * FROM rso WHERE name = ?`;
-    await connection.query(verify_rso, rso_name, (err, result) => {
-      if (err) error_code = 0;
-
-      //IF the rso does not exist THEN return the client a 401 error
-      if (result[0] == null) error_code = 1;
-      //ELSE get the id of the rso into a variable
-      else rso_id = result[0].rso_id;
-      console.log(`the rso was found and its id is ${rso_id}`);
-    });
-  }
-
-  //Throw errors if any
-  if (error_code === 0) res.status(403).json({ success: false, message: err.sqlMessage });
-  else if (error_code === 1) res.status(401).json({ success: false, message: "RSO was not found" });
-  else {
-    //Prepare query to insert the event into the DB.
-    const create_event_rso = `INSERT INTO event (loc_id, rso_id, name, description, category, type, time, date, phone, email) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    const create_event = `INSERT INTO event (loc_id, name, description, category, type, time, date, phone, email) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-
-    if (rso_id === -1) {
-      //IF there is no rso id it means it is not an rso event
-      await connection.query(create_event, [location_id, name, description, category, type, time, date, phone, email],
-        (err, result) => {
-          if (err) res.status(403).json({ success: false, message: err.sqlMessage });
-
-          else res.status(200).json({ success: true, message: "Event was successfully created!" });
-        });
     }
     else {
-      //ELSE, insert rso event
-      await connection.query(create_event_rso, [location_id, rso_id, name, description, category, type, time, date, phone, email],
-        (err, result) => {
-          if (err) res.status(403).json({ success: false, message: err.sqlMessage });
-
-          else res.status(200).json({ success: true, message: "Event was successfully created!" });
-        });
+      //If location is already in the DB, get its ID
+      //console.log(JSON.stringify(result));
+      location_id = result[0][0].loc_id;
     }
-    //Execute query.
+  });
+  // At this point we have the location ID in the location_id var
+  // console.log(`the location ID  out of conditional is ${location_id}`);
+
+  if (type == 'rso') {
+    //Verify the RSO exists in the DB
+    const verify_rso = `SELECT * FROM rso WHERE name = ?`;
+    await connection.promise().query(verify_rso, rso_name, (err) => {
+      if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+    }).then(async (result) => {
+      //No RSO was found in the DB, return 401
+      if (result[0].length == 0) {
+        res.status(401).json({ success: false, message: "RSO was not found" });
+      }
+      else {
+        //The RSO was found, get its ID and prepare the insertion query for execution
+        rso_id = result[0].rso_id;
+
+        const create_event_rso = `INSERT INTO event (loc_id, rso_id, name, description, category, type, time, date, phone, email) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        connection.query(create_event_rso, [location_id, rso_id, name, description, category, type, time, date, phone, email],
+          (err) => {
+            if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+
+            else res.status(200).json({ success: true, message: "Event was successfully created!" });
+          });
+      }
+    });
+  }
+  // Public or Private event
+  else {
+    //Prepare the query without the rso id
+    const create_event = `INSERT INTO event (loc_id, name, description, category, type, time, date, phone, email) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    connection.query(create_event, [location_id, name, description, category, type, time, date, phone, email],
+      (err) => {
+        if (err) res.status(403).json({ success: false, message: err.sqlMessage });
+
+        else res.status(200).json({ success: true, message: "Event was successfully created!" });
+      });
   }
 }
 
