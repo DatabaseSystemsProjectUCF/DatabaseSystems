@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-//const connection = require("./../Database");
-const connection = require("./../DatabaseJuan");
+const connection = require("./../Database");
+//const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -62,7 +62,7 @@ const join_rso_handler = (req, res) => {
   }
 };
 
-//CREATE RSO
+//CREATE RSO ----------FIX(NEED TO VERIFY ALL EMAILS HAVE THE SAME DOMAIN)---------------
 const create_rso_handler = (req, res) => {
   //get data from the user
   const { name, description, admin_email, email1, email2, email3 } = req.body;
@@ -156,4 +156,17 @@ const display_rso_handler = (req, res) => {
   //Else, The RSO was not found on the database, return  a 401 "RSO not found"
 };
 
-module.exports = { create_rso_handler, join_rso_handler, display_rso_handler };
+//DISPLAY RSO
+const display_all_rso_handler = (req, res) => {
+  //create query
+  const query = `SELECT * FROM rso`;
+
+  //execute query to display all rso's
+  connection.query(query, (error, result) => {
+    if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
+    else 
+      return res.status(200).json({ "success" : true, "message": result });
+  });
+};
+
+module.exports = { create_rso_handler, join_rso_handler, display_rso_handler, display_all_rso_handler};
