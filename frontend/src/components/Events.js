@@ -2,6 +2,7 @@
 import '../styles/Dashboard.css'
 
 import SideBar from './SideBar'
+import TopBar from './TopBar'
 /** ------------------------------------------------------- */
 
 
@@ -16,6 +17,7 @@ export default function Events() {
     return (
         <div className='Dashboard'>
             <SideBar />
+            <TopBar />
         </div>
     )
 }
