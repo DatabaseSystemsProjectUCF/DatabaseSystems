@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-// const connection = require("./../Database");
-const connection = require("./../DatabaseJuan");
+const connection = require("./../Database");
+//const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -157,8 +157,7 @@ const display_rso_handler = async (req, res) => {
   console.log(rso_id);
   //Second, Try to get the RSO from the database
   const get_rso = `SELECT * FROM rso WHERE rso_id = ?`;
-  await connection.promise().query(get_rso, rso_id)
-  .then( async (err, result) =>{
+  await connection.promise().query(get_rso, rso_id).then( async (err, result) =>{
     //The RSO was not found in the database
     console.log('the rso was not found');
     if(err) {console.log(JSON.stringify(err)); res.status(403).json({success: false, message: err.sqlMessage});}
@@ -189,7 +188,35 @@ const display_rso_handler = async (req, res) => {
   //Else, The RSO was not found on the database, return  a 401 "RSO not found"
 };
 
-//DISPLAY RSO
+//DANI'S VERSION 
+const display_rso_handler2 = async (req, res) => {
+  const {rso_id} = req.query;
+
+  //Queries
+  const get_rso = `SELECT * FROM rso WHERE rso_id = ?`;
+  const query2 = `SELECT email FROM users WHERE id = ?`;
+
+  //query to get rso information
+  connection.query(get_rso, [rso_id], (err, result)=>{
+    if(err) res.status(403).json({success: false, message: err.sqlMessage})
+    else{
+      if(result[0] == null) {return res.status(200).json({message: "NO RSO found"})}
+
+      //save the id of the rso admin
+      const admin_id = result[0].id;
+      //query to get the admin's email
+      connection.query(query2, [admin_id], (err, result2)=>{
+        if(err) res.status(403).json({success: false, message: err.sqlMessage});
+        else{
+          const admin_email = result2[0];
+          res.status(200).json({success: 'true', admin_email: admin_email, body: result})
+        }
+      })
+    }
+  })
+};
+
+//DISPLAY ALL RSO
 const display_all_rso_handler = (req, res) => {
   //create query
   const query = `SELECT * FROM rso`;
@@ -202,4 +229,4 @@ const display_all_rso_handler = (req, res) => {
   });
 };
 
-module.exports = { create_rso_handler, join_rso_handler, display_rso_handler, display_all_rso_handler};
+module.exports = { create_rso_handler, join_rso_handler, display_rso_handler, display_all_rso_handler, display_rso_handler2};
