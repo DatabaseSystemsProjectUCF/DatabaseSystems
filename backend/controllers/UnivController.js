@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-//const connection = require("./../Database");
+// const connection = require("./../Database");
 const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());

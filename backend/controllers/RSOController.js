@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const connection = require("./../Database");
-//const connection = require("./../DatabaseJuan");
+// const connection = require("./../Database");
+const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -149,10 +149,43 @@ const create_rso_handler = (req, res) => {
 };
 
 //DISPLAY RSO
-const display_rso_handler = (req, res) => {
-  //First get the ID of the RSO, maybe from query or params?
+const display_rso_handler = async (req, res) => {
+  //First get the ID of the RSO, from query
+  //coonvert rso_id to number type
+  //console.log(JSON.stringify(req.query));
+  const {rso_id} = req.query;
+  console.log(rso_id);
   //Second, Try to get the RSO from the database
-  //If the promise is successful, Then we return everything to the front end, status 200
+  const get_rso = `SELECT * FROM rso WHERE rso_id = ?`;
+  await connection.promise().query(get_rso, rso_id)
+  .then( async (err, result) =>{
+    //The RSO was not found in the database
+    console.log('the rso was not found');
+    if(err) {console.log(JSON.stringify(err)); res.status(403).json({success: false, message: err.sqlMessage});}
+
+    else{
+      //If the promise is successful, Then we return everything to the front end, status 200
+      //We need to get the admin email first though
+      var admin_email = '';
+      const get_admin_email = `SELECT email FROM users WHERE id = ?`;
+      await connection.promise().query(get_admin_email, result.id)
+      .then((err, result) => {
+        //The admin of the RSO is not in the database
+        console.log('the admin was not found');
+        if(err) res.status(403).json({success: false, message: err.sqlMessage});
+
+        else{
+          //save the admin's email into a variable
+          admin_email = result[0];
+        }
+      });
+      //for testing purposes log the result object here
+      console.log(JSON.stringify(result));
+      
+      res.status(200).json({success: 'true', admin_email: admin_email, name: result.name, description: result.description})
+    }
+  });
+  
   //Else, The RSO was not found on the database, return  a 401 "RSO not found"
 };
 
