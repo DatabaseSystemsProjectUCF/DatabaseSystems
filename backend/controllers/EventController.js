@@ -58,7 +58,6 @@ const create_event_handler = async (req, res) => {
   }
 }
 
-//validate user 
 const create_comment_handler = async(req,res)=>{
   //get data from user
   const {content, rating} = req.body;
@@ -68,51 +67,88 @@ const create_comment_handler = async(req,res)=>{
   const query = `INSERT INTO comments (content, rating, id, event_id, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?)`;
   const verify_event = `SELECT * FROM event WHERE event_id = ?`;
   const query2 = `SELECT first_name, last_name FROM users WHERE id = ?`;
-
+  const verify_user = `SELECT * FROM users WHERE id = ?`;
   //execute query to verify that event exists
-  connection.query(verify_event, event_id, (error, result) => {
+  connection.query(verify_event, [event_id], (error, result) => {
     if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
     else {
-      if(result[0]==null){
-        return res.status(401).json({ success: false, message: "Event doesn't exist"});
-      }
-      //execute query to retrieve users first and last name
-      connection.query(query2, id, (error, result)=>{
+      if(result[0]==null) return res.status(401).json({ success: false, message: "Event doesn't exist"});
+      
+      //execute query to verify user exists
+      connection.query(verify_user, [id], (error, result)=>{
         if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
         else{
-          const first_name = result[0].first_name;
-          const last_name = result[0].last_name;
-
-          //execute query to create new comment
-          connection.query(query, [content, rating, id, event_id, first_name, last_name], (error, result)=>{
+          if(result[0]==null) return res.status(401).json({ success: false, message: "User doesn't exist"});
+          
+          //execute query to retrieve users first and last name
+          connection.query(query2, [id], (error, result)=>{
             if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
-  
-            return res.status(200).json({ "success" : true, "message": "Comment created successfully" });
+            else{
+              const first_name = result[0].first_name;
+              const last_name = result[0].last_name;
+
+              //execute query to create new comment
+              connection.query(query, [content, rating, id, event_id, first_name, last_name], (error, result)=>{
+                if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
+                return res.status(200).json({ "success" : true, "message": "Comment created successfully" });
+              });
+            }
           });
         }
-      })
+      });
     }
   });
 }
-//validate user
+
 const edit_comment_handler = async(req,res)=>{
   //get data from the user
   const {content, rating} = req.body;
-  const {event_id, id} = req.query;
+  const {comm_id} = req.query;
   //queries
-  const query = `UPDATE comments SET content = ?, rating = ? WHERE event_id = ? AND id = ?`;
-  //execute query
-  connection.query(query, [content, rating, event_id, id], (error, result)=>{
+  const query = `UPDATE comments SET content = ?, rating = ? WHERE comm_id = ?`;
+  const verify_comment = `SELECT * FROM comments WHERE comm_id = ?`;
+  //execute query to verify comment exists
+  connection.query(verify_comment, [comm_id], (error, result)=>{
     if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
     else{
-      return res.status(200).json({ "success" : true, "message": "Comment edited successfully"});
+      if(result[0] == null) return res.status(401).json({ "success" : false, "message": "Comment doesn't exist"});
+      else{
+        //execute query to edit comment
+        connection.query(query, [content, rating, comm_id], (error, result)=>{
+          if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
+          return res.status(200).json({ "success" : true, "message": "Comment edited successfully"});
+        })
+      }
+    }
+  });
+}
+
+const delete_comment_handler = async(req, res)=>{
+  //get data from user and create queries
+  const {comm_id} = req.query;
+  const query = `DELETE FROM comments WHERE comm_id = ?`;
+  const verify_query = `SELECT * FROM comments WHERE comm_id = ?`;
+
+  //execute query to verify comment exists in the database
+  connection.query(verify_query, [comm_id], (error, result) => {
+    if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
+    else {//if comment doesn't exist return error message
+      if(result[0] == null){ return res.status(401).json({ success: false, message: "Comment doesn't exist" });}
+      else {
+        //execute query to delete comment
+        connection.query(query, [comm_id], (error, result)=>{
+          if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
+          else
+            return res.status(200).json({ "success" : true, "message": "Comment deleted"});
+        })
+      }
     }
   });
 }
 
 // DISPLAY ALL COMMENTS FOR A SINGLE EVENT
 const display_comments_handler = async(req,res) =>{
-  //create query
+  //get data and create query
   const {event_id} = req.query;
   const query = `SELECT * FROM comments WHERE event_id = ?`;
 
@@ -161,5 +197,5 @@ const display_all_events_handler = async (req, res) => {
   return res.status(200).json(events);
 }
 
-module.exports = { create_event_handler, create_comment_handler, edit_comment_handler, display_comments_handler, 
+module.exports = { create_event_handler, create_comment_handler, edit_comment_handler, delete_comment_handler, display_comments_handler, 
   display_event_handler, display_all_events_handler};
