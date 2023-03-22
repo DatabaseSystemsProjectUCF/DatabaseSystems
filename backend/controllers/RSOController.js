@@ -249,37 +249,6 @@ const display_rso_handler = async (req, res) => {
   const {rso_id} = req.query;
   //Second, prepare the queries
   const get_rso = `SELECT * FROM rso WHERE rso_id = ?`;
-<<<<<<< Updated upstream
-  await connection.promise().query(get_rso, rso_id).then( async (err, result) =>{
-    //The RSO was not found in the database
-    console.log('the rso was not found');
-    if(err) {console.log(JSON.stringify(err)); res.status(403).json({success: false, message: err.sqlMessage});}
-
-    else{
-      //If the promise is successful, Then we return everything to the front end, status 200
-      //We need to get the admin email first though
-      var admin_email = '';
-      const get_admin_email = `SELECT email FROM users WHERE id = ?`;
-      await connection.promise().query(get_admin_email, result.id)
-      .then((err, result) => {
-        //The admin of the RSO is not in the database
-        console.log('the admin was not found');
-        if(err) res.status(403).json({success: false, message: err.sqlMessage});
-
-        else{
-          //save the admin's email into a variable
-          admin_email = result[0];
-        }
-      });
-      //for testing purposes log the result object here
-      console.log(JSON.stringify(result));
-      
-      res.status(200).json({success: 'true', admin_email: admin_email, name: result.name, description: result.description})
-    }
-  });
-  
-  //Else, The RSO was not found on the database, return  a 401 "RSO not found"
-=======
   const get_admin_email = `SELECT * FROM users WHERE id = ?`;
   //Prepapre variables to hold response information
   var name = '';
@@ -306,7 +275,6 @@ const display_rso_handler = async (req, res) => {
   admin_email = admin.email;
   //Send all information to the client
   return res.status(200).json({success: true, admin_email: admin_email, name: name, description: description});
->>>>>>> Stashed changes
 };
 
 //DANI'S VERSION 
