@@ -2,41 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-//const connection = require("./../Database");
-const connection = require("./../DatabaseJuan");
+const connection = require("./../Database");
+//const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// //LOGIN, 30 lines
-// const login_handler = async (req, res) => {
-//   // get the username and password from the request
-//   const { email, password } = req.body;
-//   // Query the database for the user with the specified username
-//   const query = `SELECT * FROM users WHERE email = ?`;
-//   connection.query(query, email, (err, results) => {
-//     if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
-
-//     // If the user is found, compare the password hash with the supplied password
-//     if (results.length > 0) {
-//       const user = results[0];
-//       bcrypt.compare(password, user.password, (err, isMatch) => {
-//         if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
-
-//         if (isMatch) {
-//           // If the passwords match, return a success message
-//           res.status(200).json({ "success" : true, "message": "Login successful", "user": user });
-//         } else {
-//           // If the passwords don't match, return an error message
-//           res.status(401).json({ "success" : false, "message": "Invalid password" });
-//         }
-//       });
-//     } else {
-//       // If the user is not found, return an error message
-//       res.status(401).send({ "success" : false, "message": "User not found" });
-//     }
-//   });
-// };
 
 // LOGIN, 17 lines
 const login_handler = async (req, res) => {
