@@ -4,7 +4,7 @@ const { create_univ_handler} = require("../controllers/UnivController");
 const { body, validationResult } = require("express-validator");
 
 //Create university profile
-router.post('/create_univ_profile', 
+router.post('/create_profile', 
         //Validate email and password
         body("email").isEmail(),
         body("password").isLength({min : 8}), async (req, res)=>{

@@ -99,7 +99,7 @@ const create_rso_handler = async (req, res) => {
   for(i = 0; i < 3; i++){
     //If one of the students belongs to a different university
     if(email_domain != emails[i].substring(emails[i].indexOf("@"), emails[i].length))      
-      return res.status(403).json({success: false, message: 'one of the students belongs to a different university'});
+      return res.status(401).json({success: false, message: 'one of the students belongs to a different university'});
   }
   //Get the id of the admin
   const id = query_result[0][0].id;
@@ -156,7 +156,7 @@ const display_all_rso_handler = (req, res) => {
   connection.query(query, (error, result) => {
     if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
     else 
-      return res.status(200).json({ "success" : true, "message": result });
+      return res.status(200).json({ success: true, data: result });
   });
 };
 

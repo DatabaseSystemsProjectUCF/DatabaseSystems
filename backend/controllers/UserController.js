@@ -21,10 +21,10 @@ const login_handler = async (req, res) => {
   if (user != null) {
     bcrypt.compare(password, user.password, (err, isMatch) => {
       if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
-      if (isMatch) return res.status(200).json({ "success" : true, "message": "Login successful", "user": user });
-      else return res.status(401).json({ "success" : false, "message": "Invalid password" });
+      if (isMatch) return res.status(200).json({ success : true, message: "Login successful", "user": user });
+      else return res.status(401).json({ success : false, message: "Invalid password" });
     });
-  } else res.status(401).send({ "success" : false, "message": "User not found" });
+  } else res.status(401).send({ success : false, message: "User not found" });
 };
 
 //REGISTER
@@ -64,7 +64,7 @@ const register_handler = async (req, res) => {
           connection.query(stud_query, [id, univ_id], (error,result)=>{
             if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
 
-            return res.status(200).json({ "success" : true, "message": "User created successfully" });
+            return res.status(200).json({ success : true, message: "User created successfully" });
           })
         })
       })

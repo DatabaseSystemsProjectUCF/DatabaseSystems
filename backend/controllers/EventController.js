@@ -90,7 +90,7 @@ const create_comment_handler = async(req,res)=>{
               //execute query to create new comment
               connection.query(query, [content, rating, id, event_id, first_name, last_name], (error, result)=>{
                 if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
-                return res.status(200).json({ "success" : true, "message": "Comment created successfully" });
+                return res.status(200).json({ success : true, message: "Comment created successfully" });
               });
             }
           });
@@ -111,12 +111,12 @@ const edit_comment_handler = async(req,res)=>{
   connection.query(verify_comment, [comm_id], (error, result)=>{
     if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
     else{
-      if(result[0] == null) return res.status(401).json({ "success" : false, "message": "Comment doesn't exist"});
+      if(result[0] == null) return res.status(401).json({ success : false, message: "Comment doesn't exist"});
       else{
         //execute query to edit comment
         connection.query(query, [content, rating, comm_id], (error, result)=>{
           if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
-          return res.status(200).json({ "success" : true, "message": "Comment edited successfully"});
+          return res.status(200).json({ success: true, message: "Comment edited successfully"});
         })
       }
     }
@@ -139,26 +139,31 @@ const delete_comment_handler = async(req, res)=>{
         connection.query(query, [comm_id], (error, result)=>{
           if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
           else
-            return res.status(200).json({ "success" : true, "message": "Comment deleted"});
+            return res.status(200).json({ success : true, message: "Comment deleted"});
         })
       }
     }
   });
 }
 
-// DISPLAY ALL COMMENTS FOR A SINGLE EVENT
+// DISPLAY ALL COMMENTS FOR A SINGLE EVENT 
 const display_comments_handler = async(req,res) =>{
-  //get data and create query
+  //get data and create queries
   const {event_id} = req.query;
   const query = `SELECT * FROM comments WHERE event_id = ?`;
-
-  //execute query to display all the comments in a single event
-  connection.query(query, [event_id], (error, result) => {
+  const verify_event = `SELECT * FROM event WHERE event_id = ?`;
+  //execute query to verify that the event exists
+  connection.query(verify_event, [event_id], (error, result)=>{
     if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
     else {
-      return res.status(200).json({ "success" : true, "message": result});
+      if(result[0] == null) return res.status(401).json({ success: false, message: "Event id is not valid, no event was found" });
+      //execute query to display all the comments in a single event
+      connection.query(query, [event_id], (error, result) => {
+        if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
+        return res.status(200).json({ success : true, comments: result});
+      });
     }
-  });
+  });  
 }
 
 //HOW TO HANDLE PRIVACY:
@@ -183,7 +188,7 @@ const display_event_handler = async (req,res) =>{
   const event = query_result[0][0];
   if(event == null) return res.status(401).json({success: false, message: 'The event was not found'});
   //return all info about it to the client
-  res.status(200).json({success: true, message: event});
+  res.status(200).json({success: true, data: event});
 }
 
 //DISPLAY ALL EVENTS, 9 lines FIX: FILTER OUT BY AUTHORIZATION LEVEL, ALSO GET THE NAME OF THE LOCATION, RSO NAME
