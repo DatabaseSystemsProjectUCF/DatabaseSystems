@@ -1,7 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const connection = require("./../Database");
-//const connection = require("./../DatabaseJuan");
+// const connection = require("./../Database");
+const connection = require("./../DatabaseJuan");
+const { query } = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -166,15 +167,6 @@ const display_comments_handler = async(req,res) =>{
   });  
 }
 
-//HOW TO HANDLE PRIVACY:
-//PUBLIC:
-//any student can see the event, no verification required
-//PRIVATE:
-//only students at the host university can see this type of events.
-//verification required using the student's email.
-//RSO:
-//only students belonging to an rso can view the event.
-
 // DISPLAY SINGLE EVENT, 14 lines
 const display_event_handler = async (req,res) =>{
   //get the id of the event from the request
@@ -191,15 +183,64 @@ const display_event_handler = async (req,res) =>{
   res.status(200).json({success: true, data: event});
 }
 
-//DISPLAY ALL EVENTS, 9 lines FIX: FILTER OUT BY AUTHORIZATION LEVEL, ALSO GET THE NAME OF THE LOCATION, RSO NAME
+//DISPLAY ALL EVENTS, 58 lines
 const display_all_events_handler = async (req, res) => {
-  //prepare query
-  const get_all_events = `SELECT * FROM event`;
-  var query_result = await connection.promise().query(get_all_events)
-  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage}) });  
-  const events = query_result[0];
-  //send the events to the client
-  return res.status(200).json(events);
+  //get user ID from client
+  const {id} = req.body;
+  //prepare response variable
+  const public = 'public';
+  const private = 'private';
+  const rso = 'rso';
+  var events = [];
+  //GET ALL PUBLIC EVENTS
+  const get_public_events = `SELECT * FROM event WHERE type = ?`;
+  //GET PRIVATE EVENTS FROM SAME UNIVERSITY AS THE USER
+  //Query to get the univ_id of the user
+  const get_univ_id = `SELECT univ_id FROM students WHERE id = ?`;
+  //Query to get the location id of the university
+  const get_loc_id = `SELECT loc_id FROM location WHERE univ_id = ?`;
+  //Query to get the private events with the location of the university
+  const get_private_events = `SELECT * FROM event WHERE type = ? AND loc_id = ?`;
+  //GET RSO EVENTS FROM THE RSO'S THAT THE USER IS A MEMBER OF
+  //Query to get the RSOs that the user is a member of as an array
+  const get_rso_ids = `SELECT rso_id FROM joins WHERE id = ?`;
+  //Query to get the rso events
+  const get_rso_events = `SELECT * FROM event WHERE type = ? AND rso_id IN (?)`;
+  //START EXECUTING THE QUERIES
+  var query_result = await connection.promise().query(get_public_events, public)
+  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
+  const public_events = query_result[0];
+  //ADD PUBLIC EVENTS TO RESPONSE
+  events = events.concat(public_events);
+  var query_result = await connection.promise().query(get_univ_id, id)
+  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
+  const univ_id = query_result[0][0].univ_id;
+  var query_result = await connection.promise().query(get_loc_id, univ_id)
+  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
+  const loc_id = query_result[0][0].loc_id;
+  var query_result = await connection.promise().query(get_private_events, [private, loc_id])
+  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
+  const private_events = query_result[0];
+  //ADD PRIVATE EVENTS TO RESPONSE
+  events = events.concat(private_events);
+  var query_result = await connection.promise().query(get_rso_ids, id)
+  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
+  const rso_ids_json = query_result[0]; //This is an array of JSON
+  var rso_ids = [];
+  rso_ids_json.forEach(element => {
+    var {rso_id} = element;
+    rso_ids.push(rso_id);
+  });
+  //If the user is in no rso's, dont run rso query
+  if(rso_ids.length != 0){
+    var query_result = await connection.promise().query(get_rso_events, [rso, rso_ids])
+    .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
+    const rso_events = query_result[0];
+    //ADD RSO EVENTS TO RESPONSE
+    events = events.concat(rso_events);
+  }
+  //RETURN RESPONSE
+  return res.status(200).json({success: true, message: 'The events were returned successfully', events: events});
 }
 
 module.exports = { create_event_handler, create_comment_handler, edit_comment_handler, delete_comment_handler, display_comments_handler, 
