@@ -7,6 +7,7 @@ import AddTaskIcon from '@mui/icons-material/AddTask';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Diversity1OutlinedIcon from '@mui/icons-material/Diversity1Outlined';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -134,7 +135,7 @@ export default function RSO() {
             if(search !== '') {
 
                 // Find the element, if it exists, find its index and display only that card
-                var idx = RSOs.findIndex(element => element.title.toLowerCase() === search.toLowerCase())
+                let idx = RSOs.findIndex(element => element.title.toLowerCase() === search.toLowerCase())
                 if(idx !== -1){
                     startidx = idx
                     endidx = idx + 1
@@ -154,7 +155,7 @@ export default function RSO() {
             if(search !== '') {
 
                 // Find the element, if it exists, find its index and display only that card
-                var idx = RSOs.findIndex(element => element.title.toLowerCase() === search.toLowerCase())
+                let idx = RSOs.findIndex(element => element.title.toLowerCase() === search.toLowerCase())
                 if(idx !== -1){
                     startidx = idx
                     endidx = idx + 1
@@ -256,6 +257,16 @@ export default function RSO() {
         console.log('Joining ', title)
     }
 
+    /**
+     * 
+     * Sends a join RSO request to the backend
+     * 
+     * @param {*} title - Title of the RSO
+     */
+    function leaveRSO(title) {
+        console.log('Leaving ', title)
+    }
+
     // Return RSO elements to be displayed
     return (
         <div className='Dashboard'>
@@ -353,6 +364,9 @@ export default function RSO() {
                                     <Grid item key={key} xs={2.95} className='cards rounded'>
                                         <div className='title'>
                                             {value.title}
+                                            <div className='join-icon' onClick={(event) => {leaveRSO(value.title)}}>
+                                                <ExitToAppIcon/>
+                                            </div>
                                         </div>
                                         <div className='description'>
                                             <b><u>Description</u></b> 
