@@ -1,13 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-// const connection = require("./../Database");
-const connection = require("./../DatabaseJuan");
+ const connection = require("./../Database");
+//const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //JOIN RSO
-const join_rso_handler = (req, res) => {
+const join_rso_handler = async (req, res) => {
   //get information from the request
   const { id } = req.body;
   const { rso_id } = req.query;
@@ -16,50 +16,37 @@ const join_rso_handler = (req, res) => {
   const verify_query1 = `SELECT * FROM users WHERE id = ?`;
   const verify_query2 = `SELECT * FROM rso WHERE rso_id = ?`;
   const query = `INSERT INTO joins (rso_id, id) VALUES (?, ?)`;
+  const update_rso = `UPDATE rso SET no_members = no_members + 1 WHERE rso_id = ? `;
 
   //this variable chooses the error to be sent to the client
-  var error_code = -1;
+  var query_result = -1;
 
   //verify the student exists in the database
-  connection.query(verify_query1, [id], (err, results) => {
-    if (err) error_code = 0;
+  query_result = await connection.promise().query(verify_query1, [id])
+  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
 
-    //the student is not in the database
-    if (results[0] == null) {
-      error_code = 1;
-    }
-  });
+  //the student is not in the database
+  if (query_result[0][0] == null) {
+    return res.status(401).json({success: false, message: 'User not found'});
+  }
 
   //verify the rso exists in the database
-  connection.query(verify_query2, [rso_id], (err, results) => {
-    if (err) error_code = 0;
-
-    //the rso is not in the database
-    if (results[0] == null) {
-      error_code = 2;
-    }
-  });
-
-  //Throw error if any before attepting to join the student to the rso
-  if (error_code === 0) {
-    res.status(403).json({ success: false, message: err.sqlMessage });
-  } else if (error_code === 1) {
-    res.status(401).json({ success: false, message: "User not found" });
-  } else if (error_code === 2) {
-    res.status(401).json({ success: false, message: "RSO not found" });
-  } else {
-    //add a row in the joins table, (student joins rso)
-    connection.query(query, [rso_id, id], (err) => {
-      if (err)
-        res.status(403).json({ success: false, message: err.sqlMessage });
-      else {
-        //successful insertion
-        res
-          .status(200)
-          .json({ success: true, message: "Successfully joined to the RSO!!" });
-      }
-    });
+  query_result = await connection.promise().query(verify_query2, [rso_id])
+ .catch((err) => {return res.status(403).json({success: false, message: err.sqlMessage})});
+  //the rso is not in the database
+  if (query_result[0][0] == null) {
+    return res.status(401).json({success: false, message: 'RSO not found'});
   }
+
+  //update rso table
+  query_result = await connection.promise().query(update_rso, rso_id).
+  catch((err) => {return res.status(403).json({ success: false, message: err.sqlMessage})});
+
+  //add a row in the joins table, (student joins rso)
+  query_result = await connection.promise().query(query, [rso_id, id])
+  .catch((err) => {return res.status(403).json({ success: false, message: 'err.sqlMessage' })});
+
+  return res.status(200).json({ success: true, message: "Successfully joined to the RSO!!" });  
 };
 
 // Juansito's way, async / await, 48 lines
@@ -72,7 +59,7 @@ const create_rso_handler = async (req, res) => {
   const verify_email3 = `SELECT * FROM users WHERE email = ?`;
   const verify_admin = `SELECT id FROM users WHERE email = ?`;
   const make_admin = `UPDATE users SET level_id = 1 WHERE email = ?;`;
-  const query = `INSERT INTO rso (name, description, id) VALUES (?, ?, ?)`;
+  const query = `INSERT INTO rso (name, description, id, no_members) VALUES (?, ?, ?, 4)`;
 
   var query_result = await connection.promise().query(verify_email1, email1)
   .catch((err) => { return res.status(403).json({ success: false, message: err.sqlMessage }) });
@@ -160,4 +147,32 @@ const display_all_rso_handler = (req, res) => {
   });
 };
 
-module.exports = { create_rso_handler, join_rso_handler, display_rso_handler, display_all_rso_handler};
+//Leave an RSO
+const leave_rso_handler = (req, res)=>{
+  //get id of user who wants to leave RSO
+  const {id, rso_id} = req.query;
+
+  //queries
+  const verify_userRso = `SELECT * FROM joins WHERE rso_id = ? AND id = ?`;
+  const query = `DELETE FROM joins WHERE rso_id = ? AND id = ?`;
+  const alter_count = `UPDATE rso SET no_members = no_members-1 WHERE rso_id = ?`;
+
+  //execute query to verify if user is part of said RSO
+  connection.query(verify_userRso, [rso_id, id], (error, result)=>{
+    if(error) return res.status(403).json({ success: false, message: error.sqlMessage })
+    else{
+      if(result[0]==null) return res.status(401).json({ success: false, message: "User is not a member of said RSO" })
+      //execute query to remove user from rso
+      connection.query(query, [rso_id, id], (error, result)=>{
+        if(error) return res.status(403).json({ success: false, message: error.sqlMessage })
+        //execute query to update number of members in rso
+        connection.query(alter_count, [rso_id], (error, result)=>{
+          if(error) return res.status(403).json({ success: false, message: error.sqlMessage })
+          return res.status(200).json({ success: true, message: "User deleted successfully" })
+        })
+      })
+    }
+  })
+};
+
+module.exports = { create_rso_handler, join_rso_handler, display_rso_handler, display_all_rso_handler, leave_rso_handler};
