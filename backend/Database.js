@@ -1,5 +1,5 @@
 /** MYSQL Instance */
-const mysql = require("mysql")
+const mysql = require("mysql2")
 
 /**
  * Database Connection: Takes the following parameters:
@@ -11,9 +11,9 @@ const mysql = require("mysql")
  */
 const db_er = mysql.createConnection({
     host: "localhost",
-    user: "root",
+    user: "danielaO",
     password: "password",
-    database: "db_er"
+    database: "dbproject"
 })
 
 /** Export DB Connection */
