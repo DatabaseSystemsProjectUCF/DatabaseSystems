@@ -16,7 +16,8 @@ const login_handler = async (req, res) => {
   const query = `SELECT * FROM users WHERE email = ?`;
   var query_result = await connection.promise().query(query, email)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage}) });
-  const user = query_result[0][0];
+  const user = query_result[0];
+  //const user = query_result[0][0];
   // If the user is found, compare the password hash with the supplied password
   if (user != null) {
     bcrypt.compare(password, user.password, (err, isMatch) => {
