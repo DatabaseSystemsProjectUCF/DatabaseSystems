@@ -11,13 +11,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // LOGIN, 17 lines
 const login_handler = async (req, res) => {
   // get the username and password from the request
-  const { email, password } = req.body;
+  const { email, password } = req.query;
   // Query the database for the user with the specified username
   const query = `SELECT * FROM users WHERE email = ?`;
   var query_result = await connection.promise().query(query, email)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage}) });
-  const user = query_result[0];
-  //const user = query_result[0][0];
+  const user = query_result[0][0];
   // If the user is found, compare the password hash with the supplied password
   if (user != null) {
     bcrypt.compare(password, user.password, (err, isMatch) => {
