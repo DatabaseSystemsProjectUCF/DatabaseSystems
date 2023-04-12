@@ -192,19 +192,19 @@ const display_all_events_handler = async (req, res) => {
   const rso = 'rso';
   var events = [];
   //GET ALL PUBLIC EVENTS
-  const get_public_events = `SELECT * FROM event WHERE type = ?`;
+  const get_public_events = `SELECT * FROM event INNER JOIN location ON event.loc_id = location.loc_id WHERE type = ?`;
   //GET PRIVATE EVENTS FROM SAME UNIVERSITY AS THE USER
   //Query to get the univ_id of the user
   const get_univ_id = `SELECT univ_id FROM students WHERE id = ?`;
   //Query to get the location id of the university
   const get_loc_id = `SELECT loc_id FROM location WHERE univ_id = ?`;
   //Query to get the private events with the location of the university
-  const get_private_events = `SELECT * FROM event WHERE type = ? AND loc_id = ?`;
+  const get_private_events = `SELECT * FROM event INNER JOIN location ON event.loc_id = location.loc_id WHERE type = ? AND event.loc_id = ?`;
   //GET RSO EVENTS FROM THE RSO'S THAT THE USER IS A MEMBER OF
   //Query to get the RSOs that the user is a member of as an array
   const get_rso_ids = `SELECT rso_id FROM joins WHERE id = ?`;
   //Query to get the rso events
-  const get_rso_events = `SELECT * FROM event WHERE type = ? AND rso_id IN (?)`;
+  const get_rso_events = `SELECT * FROM event INNER JOIN location ON event.loc_id = location.loc_id WHERE type = ? AND rso_id IN (?)`;
   //START EXECUTING THE QUERIES
   var query_result = await connection.promise().query(get_public_events, public)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
