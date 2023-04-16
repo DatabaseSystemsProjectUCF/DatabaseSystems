@@ -1,0 +1,12 @@
+.TopBar {
+    height: 20%;
+    width: 80%;
+    position: fixed;
+    top: 0;
+    margin-left: 20%;
+}
+
+.TopBar .Banner {
+    height: 60%;
+    width: 100%;
+}

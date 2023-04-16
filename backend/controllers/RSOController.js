@@ -147,6 +147,30 @@ const display_all_rso_handler = (req, res) => {
   });
 };
 
+//Display My RSO handlers
+const display_my_rsos_handler = async (req, res) => {
+  //get the id of the user from the client
+  const {id} = req.query;
+  //prepare queries
+  const get_rso_ids = `SELECT rso_id FROM joins WHERE id = ?`;
+  const get_rsos = `SELECT * FROM rso WHERE rso_id IN (?)`;
+  //get the id's of my rso's
+  var query_result = await connection.promise().query(get_rso_ids, id)
+  .catch((err) => { res.status(403).json({ success: false, message: err.sqlMessage }) });
+  const list_objects = query_result[0];
+  //transform list of json to regular list of numbers
+  var list = [];
+  list_objects.forEach(element => {
+    var {rso_id} = element;
+    list.push(rso_id);
+  });
+  //perform second query
+  query_result = await connection.promise().query(get_rsos, [list])
+  .catch((err) => { res.status(403).json({ success: false, message: err.sqlMessage }) });
+  const result = query_result[0];
+  return res.status(200).json({success: true, data: result});
+}
+
 //Leave an RSO
 const leave_rso_handler = (req, res)=>{
   //get id of user who wants to leave RSO
@@ -175,4 +199,4 @@ const leave_rso_handler = (req, res)=>{
   })
 };
 
-module.exports = { create_rso_handler, join_rso_handler, display_rso_handler, display_all_rso_handler, leave_rso_handler};
+module.exports = { create_rso_handler, join_rso_handler, display_rso_handler, display_all_rso_handler, display_my_rsos_handler, leave_rso_handler};

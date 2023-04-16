@@ -14,7 +14,7 @@ export const SideBarData = [
         link: "/"
     },
     {
-        title: "Home",
+        title: "University",
         icon: <CottageIcon />,
         link: "/"
     },

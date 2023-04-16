@@ -1,5 +1,6 @@
 /** ----------------------- IMPORTS ----------------------- */
 import '../styles/Sidebar.css'
+import LogoutIcon from '@mui/icons-material/Logout';
 
 import { Avatar } from '@mui/material';
 import React, { useEffect, useState } from 'react'
@@ -51,6 +52,19 @@ export default function SideBar() {
         return username
     }
 
+    /**
+     * Function to handle signout. Clears out the local
+     *      storage and redirects to login.
+     * 
+     */
+    function handleSignOut() {
+        // Clear localStorage
+        localStorage.clear()
+        
+        // Redirect to Login
+        window.location.pathname = "/Login"
+    }
+
     return (
 
         // Main SideBar Div
@@ -72,11 +86,12 @@ export default function SideBar() {
             <ul className='SidebarList'>
                 {SideBarData.map((value, key) => {
                     return (
+
                         // Individual option rows. Uses SideBarData.js for its data
                         <div key={key}>
                             <li 
                             className='row'
-                            id={value.title !== "Search" && window.location.pathname === value.link ? "active" : currentSearchStyle }
+                            id={ (window.location.pathname === value.link && !extendSearchComponent && value.title !== "Search") || (extendSearchComponent && value.title === "Search")  ? "active" : currentSearchStyle }
                             onClick={() => { if (value.title !== "Search") window.location.pathname = value.link; else setExtendSearchComponent(!extendSearchComponent) }}
                             >
                                 {" "}
@@ -84,11 +99,21 @@ export default function SideBar() {
                                 <div id='title'>{value.title}</div>
                             </li>
 
-                            {/** Extend Search component if search is clicked */}
+                            {/** Extend Search component if search is clicked. Uses SearchComponent.js for it's data */}
                             { extendSearchComponent && value.title === 'Search' && <SearchComponent /> }
                         </div>
                     )
                 })}
+            </ul>
+
+            <ul className='Signout-Button'>
+                <li 
+                className='row' 
+                id='signout'
+                onClick={() => {handleSignOut()}}>
+                    <div id='icon'><LogoutIcon /></div>
+                    <div id='title'>Sign Out</div>
+                </li>
             </ul>
         </div>
     )

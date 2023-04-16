@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 // const connection = require("./../Database");
-const connection = require("./../DatabaseJuan");
+const connection = require("./../Database");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // LOGIN, 17 lines
 const login_handler = async (req, res) => {
   // get the username and password from the request
-  const { email, password } = req.body;
+  const { email, password } = req.query;
   // Query the database for the user with the specified username
   const query = `SELECT * FROM users WHERE email = ?`;
   var query_result = await connection.promise().query(query, email)
