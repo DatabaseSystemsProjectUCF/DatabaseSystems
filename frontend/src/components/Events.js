@@ -2,6 +2,7 @@
 import '../styles/Dashboard.css'
 import '../styles/Event.css'
 
+import axios from 'axios'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -15,6 +16,7 @@ import { Grid } from '@mui/material';
 import { useEffect, useRef, useState } from 'react'
 import { Alert, Button, Form, Modal } from 'react-bootstrap'
 
+import { EMAIL, ID } from '../constants/DatabaseConstants';
 import SideBar from './SideBar'
 import TopBar from './TopBar'
 /** ------------------------------------------------------- */
@@ -26,155 +28,6 @@ import TopBar from './TopBar'
  * @returns Events Layout
  */
 export default function Events() {
-
-    /** MOCK DATA FOR RSO */
-    const Events = [
-        {
-            title: "Event 1",
-            description: "This is Event 1 klasjd fkhjas dfjhaslk dfjklha sdkjfhkashd fklhasdu fhiuashd dfkljhsakldf huilwa  kjhskl djfh laksdh fliasgd flkjhas kldfhlasjhdfoiu waiuer klh iuoh daiuf hsaskj dfhjkashd fkljhas fhjklsadhf kajhsdf klhaus ildfguiah sdfj khaskld f klsahd flkjh dflkhas d",
-            category: "Tech",
-            type: "private",
-            date: "2023/06/12",
-            time: "12:01:02",
-            phone: "4568931521",
-            email: "tech@ucf.edu",
-            name_loc: "Downtown orlando",
-            lat: 2.456,
-            long: 5.632
-        },
-        {
-            title: "Event 2",
-            description: "This is Event 2",
-            category: "Med",
-            type: "private",
-            date: "2023/06/12",
-            time: "12:01:02",
-            phone: "4568931521",
-            email: "tech@ucf.edu",
-            name_loc: "Downtown orlando",
-            lat: 2.456,
-            long: 5.632
-        },
-        {
-            title: "Event 3",
-            description: "This is Event 3",
-            category: "Bio",
-            type: "private",
-            date: "2023/06/12",
-            time: "12:01:02",
-            phone: "4568931521",
-            email: "tech@ucf.edu",
-            name_loc: "Downtown orlando",
-            lat: 2.456,
-            long: 5.632
-        },
-        {
-            title: "Event 4",
-            description: "This is Event 4",
-            category: "Sec",
-            type: "private",
-            date: "2023/06/12",
-            time: "12:01:02",
-            phone: "4568931521",
-            email: "tech@ucf.edu",
-            name_loc: "Downtown orlando",
-            lat: 2.456,
-            long: 5.632
-        },
-        {
-            title: "Event 5",
-            description: "This is Event 5",
-            category: "Rel",
-            type: "private",
-            date: "2023/06/12",
-            time: "12:01:02",
-            phone: "4568931521",
-            email: "tech@ucf.edu",
-            name_loc: "Downtown orlando",
-            lat: 2.456,
-            long: 5.632
-        },
-        {
-            title: "Event 6",
-            description: "This is Event 6",
-            category: "Concert",
-            type: "private",
-            date: "2023/06/12",
-            time: "12:01:02",
-            phone: "4568931521",
-            email: "tech@ucf.edu",
-            name_loc: "Downtown orlando",
-            lat: 2.456,
-            long: 5.632
-        }
-    ]
-
-    /** MOCK DATA FOR RSO */
-    const RSOs = [
-        {
-            title: "RSO 1",
-            description: "This is RSO 1",
-            num_members: 14
-        },
-        {
-            title: "RSO 2",
-            description: "This is RSO 2",
-            num_members: 5
-        },
-        {
-            title: "RSO 3",
-            description: "This is RSO 3",
-            num_members: 8
-        },
-        {
-            title: "RSO 4",
-            description: "This is RSO 4",
-            num_members: 10
-        },
-        {
-            title: "RSO 5",
-            description: "This is RSO 5aio sdhfkjas dfkljha lsdfjhlask hdfjlhlkas dhflhlaskdh fjlhasljdhf ihasi dhufasdyf oiuhasidf uioas dohf jahskdf gyuoias klfhiuasdy fuo ashdlkh gilawh fasijh fliuias kdfjhauiowryn lgjajsnlkjngsid fkljxh oih sakjngkljhnasuiofh kasdhgioH DKJLWIUGYN UIOFDAHJ GKJAB SDKLJJLAKS KLFJHKSJLDAH FKHDSAJKD HLSA L",
-            num_members: 76
-        },
-        {
-            title: "RSO 6",
-            description: "This is RSO 6",
-            num_members: 45
-        },
-        {
-            title: "RSO 7",
-            description: "This is RSO 7",
-            num_members: 16
-        },
-        {
-            title: "RSO 8",
-            description: "This is RSO 8",
-            num_members: 123
-        },
-        {
-            title: "RSO 9",
-            description: "This is RSO 9",
-            num_members: 54
-        }
-    ]
-
-    const mockComments = [
-        {
-            studentName: 'Dani',
-            rating: '9/10',
-            content: 'I absolutely loved this event'
-        },
-        {
-            studentName: 'Juan',
-            rating: '8/10',
-            content: 'I loved this event'
-        },
-        {
-            studentName: 'Usman',
-            rating: '7/10',
-            content: 'I liked this event'
-        }
-    ]
 
     /** useRefs for Event Creation */
     const createEventCatRef = useRef()
@@ -200,7 +53,9 @@ export default function Events() {
 
     const searchString = useRef()
 
+    const [editCommentObj, setEditCommentObj] = useState(null)
     const [error, setError] = useState('')
+    const [Events, setEvents] = useState([])
     const [commentError, setCommentError] = useState('')
     const [isCreateCommentOpen, setIsCreateCommentOpen] = useState(false)
     const [isCreateEventOpen, setIsCreateEventOpen] = useState(false)
@@ -208,10 +63,43 @@ export default function Events() {
     const [isRSOCreation, setISRSOCreation] = useState(false)
     const [pageNumber, setPageNumber] = useState(1)
     const [pageCards, setPageCards] = useState([])
+    const [RSOs, setRSOs] = useState([])
     const [search, setSearch] = useState('')
     const [comments, setComments] = useState([])
     const [showComment, setShowComment] = useState(false)
     const [commentEvent, setCommentEvent] = useState(null)
+
+    /**
+     * 
+     * UseEffect for the initial page load. Loads only one time
+     * 
+     */
+    useEffect(() => {
+
+        fetchData()
+
+    }, [])
+
+    /**
+     * 
+     * Fetches initial load data
+     */
+    async function fetchData() {
+        
+        // All RSOs
+        await axios.get("http://localhost:8800/rso/display_all_rso").then((response) => {
+            setRSOs(response.data.data)
+        }).catch((api_error) => {
+            console.log(api_error)
+        })
+
+        // Events
+        await axios.get(`http://localhost:8800/events/show_all_events?id=${localStorage.getItem(ID)}`).then((response) => {
+            setEvents(response.data.events)
+        }).catch((api_error) => {
+            console.log(api_error)
+        })
+    }
 
     /**
      * 
@@ -224,6 +112,7 @@ export default function Events() {
     useEffect(() => {
 
         console.log(search)
+        console.log(Events)
 
         // Indexes
         var startidx = (pageNumber - 1) * NUMBEROFITEMSPERPAGE
@@ -252,7 +141,7 @@ export default function Events() {
             
         setPageCards(spliced)
     
-    }, [pageNumber, search])
+    }, [pageNumber, search, Events])
 
     /**
      * 
@@ -262,9 +151,19 @@ export default function Events() {
      */
     useEffect(() => {
 
-        setComments(mockComments)
+        if(showComment){
+            // All RSOs
+            axios.get(`http://localhost:8800/events/get_comments?event_id=${commentEvent.event_id}`).then((response) => {
+                console.log(response.data.comments)
+                setComments(response.data.comments)
+            }).catch((api_error) => {
+                console.log(api_error)
+            })
+        }
         
-    }, [showComment])
+        
+
+    }, [showComment, commentEvent])
 
     /**
      * 
@@ -368,7 +267,7 @@ export default function Events() {
         if(!phonereg.test(createEventPhoneRef.current.value))
             return setError("Phone Number is not in a valid format.")
         if(createEventTypeRef.current.value === 'rso'){
-            let idx = RSOs.findIndex(element => element.title.toLowerCase() === createEventRSOLink.current.value.toLowerCase())
+            let idx = RSOs.findIndex(element => element.name.toLowerCase() === createEventRSOLink.current.value.toLowerCase())
             if(idx === -1)
                 return setError('RSO Type does not have a valid RSO Name!')
         }
@@ -390,7 +289,43 @@ export default function Events() {
         console.log(date)
         console.log(time)
 
+        const params = {}
+
+        params['name'] = createEventNameRef.current.value
+        params['description'] = createEventDescRef.current.value
+        if(createEventTypeRef.current.value === 'rso')
+            params['rso_name'] = createEventRSOLink.current.value
+        params['category'] = createEventCatRef.current.value
+        params['type'] = createEventTypeRef.current.value
+        params['date'] = date
+        params['time'] = time
+        params['phone'] = createEventPhoneRef.current.value
+        params['email'] = localStorage.getItem(EMAIL)
+        params['name_loc'] = createEventLocRef.current.value
+        params['lat'] = createEventLatRef.current.value
+        params['long'] = createEventLongRef.current.value
+
+        axios.post("http://localhost:8800/events/create", params).then((response) => {
+
+            console.log(response)
+
+        }).catch((auth_error) => {
+
+            // If the domain already exists
+            if(auth_error.response.status === 401){
+                setError('University with domain entered already exists')
+                console.log(auth_error.response.data)
+            }
+            else if(auth_error.response.status === 403){
+                setError('Internal Error, please try again later')
+                console.log(auth_error.response.data)
+            }
+
+        })
+
         handleEventCreateClose()
+
+        setTimeout(function(){window.location.reload()}, 250)
     }
     
     /**
@@ -415,6 +350,29 @@ export default function Events() {
         console.log(createCommentContentRef.current.value)
         console.log(createCommentRatingRef.current.value)
 
+        axios.post(`http://localhost:8800/events/create_comment?id=${localStorage.getItem(ID)}&event_id=${commentEvent.event_id}`, {
+
+            content: createCommentContentRef.current.value,
+            rating: createCommentRatingRef.current.value
+
+        }).then((response) => {
+
+            console.log(response)
+            setTimeout(function(){window.location.reload()}, 250)
+
+        }).catch((auth_error) => {
+
+            // If the university doesn't exist
+            if(auth_error.response.status === 401){
+                setError("University with email domain doesn't exist.")
+                console.log(auth_error.response.data)
+            }
+            else if(auth_error.response.status === 403){
+                setError("Not sure!")
+                console.log(auth_error.response.data)
+            }
+        })
+
         handleCommentCreateClose()
     }
 
@@ -431,30 +389,81 @@ export default function Events() {
         const ratingRegEx = /^\d+$/
 
         // ERROR HANDLING
-        if(createCommentRatingRef.current.value === '' || createCommentContentRef.current.value === '')
+        if(editCommentRatingRef.current.value === '' || editCommentContentRef.current.value === '')
             return setCommentError('None of the fields can be empty!')
-        if(!ratingRegEx.test(createCommentRatingRef.current.value))
+        if(!ratingRegEx.test(editCommentRatingRef.current.value))
             return setCommentError('Rating should be a single digit between 0-10')
 
-        console.log(createCommentContentRef.current.value)
-        console.log(createCommentRatingRef.current.value)
+        console.log(editCommentContentRef.current.value)
+        console.log(editCommentRatingRef.current.value)
+
+        axios.put(`http://localhost:8800/events/edit_comment?comm_id=${editCommentObj.comm_id}`, {
+
+            content: editCommentContentRef.current.value,
+            rating: editCommentRatingRef.current.value
+
+        }).then((response) => {
+
+            console.log(response)
+            let idx = comments.findIndex(comment => comment.comm_id === editCommentObj.comm_id)
+
+            let newComments = [...comments]
+            newComments[Object.keys(newComments)[idx]].content = editCommentContentRef.current.value
+            newComments[Object.keys(newComments)[idx]].rating = editCommentRatingRef.current.value
+
+            setComments(newComments)
+
+        }).catch((auth_error) => {
+
+            // If the university doesn't exist
+            if(auth_error.response.status === 401){
+                setError("University with email domain doesn't exist.")
+                console.log(auth_error.response.data)
+            }
+            else if(auth_error.response.status === 403){
+                setError("Not sure!")
+                console.log(auth_error.response.data)
+            }
+        })
 
         handleCommentEditClose()
     }
 
-    async function deleteComment(name) {
-        console.log("Deleting: ", name)
+    async function deleteComment(id) {
+        console.log("Deleting: ", id)
 
+        axios.put(`http://localhost:8800/events/delete_comment?comm_id=${id}`
+        
+        ).then((response) => {
+
+            let newComments = comments.filter((comment) => comment.comm_id !== id)
+            setComments(newComments)
+
+            console.log(response)
+
+        }).catch((auth_error) => {
+
+            // If the university doesn't exist
+            if(auth_error.response.status === 401){
+                setError("University with email domain doesn't exist.")
+                console.log(auth_error.response.data)
+            }
+            else if(auth_error.response.status === 403){
+                setError("Not sure!")
+                console.log(auth_error.response.data)
+            }
+        })
     }
 
     /**
      * 
-     * Sends a join Event request to the backend
+     * Validates user's permission to edit and delete a commment
      * 
-     * @param {*} title - Title of the Event
+     * @param {*} comment - Comment Object to be validated
+     * @returns {Boolean} - Whether the user can edit or delete that comment
      */
-    function joinEvent(title) {
-        console.log('Joining ', title)
+    function canEditAndDelete(comment) {
+        return (comment.id === parseInt(localStorage.getItem(ID))) ? true : false
     }
 
     // Return Events elements to be displayed
@@ -569,7 +578,7 @@ export default function Events() {
                                     <Grid item key={key} xs={2.95} className='cards rounded'>
                                         <div style={{borderBottom: '1px solid white', width: '90%'}}>
                                             <div className='title'>
-                                                {value.title}
+                                                {value.name}
                                                 <div className='type'>{value.type.toUpperCase()}</div>
                                             </div>
                                         </div>
@@ -578,7 +587,7 @@ export default function Events() {
                                             : {value.description}
                                         </div>
                                         <div className='category'><b><u>Category</u></b>: {value.category} </div>
-                                        <div className='location'><b><u>Where</u></b>: {value.name_loc} ({value.lat} {value.long})</div>
+                                        <div className='location'><b><u>Where</u></b>: {value.location_name} ({value.latitude} {value.longitud})</div>
                                         <div className='location'><b><u>When</u></b>: {value.date} {value.time}</div>
                                         <div className='email'><b><u>Email</u></b>: {value.email}</div>
                                         <div className='email'><b><u>Phone</u></b>: {value.phone}</div>
@@ -711,13 +720,13 @@ export default function Events() {
                                     {/** Name Section */}
                                     <Form.Group id='name'>
                                         <Form.Label>Rating</Form.Label>
-                                        <Form.Control ref={editCommentRatingRef} placeholder="Enter a Rating..."/>
+                                        <Form.Control ref={editCommentRatingRef} placeholder={editCommentObj && editCommentObj.rating}/>
                                     </Form.Group>
                                     
                                     {/** Description Section */}
                                     <Form.Group id='description'>
                                         <Form.Label>Comment</Form.Label>
-                                        <Form.Control ref={editCommentContentRef} placeholder="Enter a Comment..."/>
+                                        <Form.Control ref={editCommentContentRef} placeholder={editCommentObj && editCommentObj.content}/>
                                     </Form.Group>
 
                                     <Button variant='dark' className='w-100 mt-3' type="submit">Submit</Button>
@@ -728,25 +737,27 @@ export default function Events() {
                         {/** Page Number and Title Bar */}
                         <div className='page-bar'>
                             <div className='back-icon'><ArrowBackIcon style={{fontSize: '40px', alignContent: 'center', justifyContent: 'center'}} onClick={() => {setShowComment(false); setCommentEvent(null)}}/></div>
-                            <div className='title'>{commentEvent.title}</div>
+                            <div className='title'>{commentEvent.name}</div>
                             <Button className='add-comment' variant='dark' onClick={() => {setIsCreateCommentOpen(true); setCommentError('')}}><AddCircleOutlineIcon /> Add Comment</Button>
                         </div>
 
                         {/** Comment Rows */}
                         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} className='comment-rows'>
-                            {comments.map((value, key) => {
+                            {comments && comments.map((value, key) => {
                                 return (
-                                    <div className='comment'>
+                                    <div key={key} className='comment'>
                                         <div className='name'>
-                                            <b><u>Name</u></b>: {value.studentName}
+                                            <b><u>Name</u></b>: {value.first_name.toUpperCase()} {value.last_name.toUpperCase()}
                                             <div className='rating'>
                                                 <b><u>Rating</u></b>: {value.rating}
                                             </div>
                                             <div>
-                                                <EditIcon className='edit-icon' onClick={() => {setIsEditCommentOpen(true) }}/>
+                                                { canEditAndDelete(value) &&
+                                                <EditIcon className='edit-icon' onClick={() => {setIsEditCommentOpen(true); setEditCommentObj(value)}}/>}
                                             </div>
                                             <div>
-                                                <DeleteForeverIcon style={{marginLeft: '200%', right: '0%'}} onClick={() => {deleteComment(value.studentName)}}/>
+                                                { canEditAndDelete(value) &&
+                                                <DeleteForeverIcon className='delete-icon' onClick={() => {deleteComment(value.comm_id)}}/>}
                                             </div>
                                         </div>
                                         <div className='content'>

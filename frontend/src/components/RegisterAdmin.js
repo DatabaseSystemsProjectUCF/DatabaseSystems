@@ -99,11 +99,19 @@ export default function RegisterAdmin() {
             console.log('Longitude: ', univLocLongRef.current.value)
             
             // Call the Login API
-            /*
-            axios.post("http://localhost:8800/user/login", {
+            
+            axios.post("http://localhost:8800/university/create_profile", {
 
-                email: usernameRef.current.value,
-                password: passwordRef.current.value
+                name: univNameRef.current.value,
+                description: univDescRef.current.value,
+                no_students: univNoStudentsRef.current.value,
+                first_name: firstNameRef.current.value,
+                last_name: lastNameRef.current.value,
+                email: emailRef.current.value,
+                password: passwordRef.current.value,
+                loc_name: univLocNameRef.current.value,
+                longitude: univLocLongRef.current.value,
+                latitude: univLocLatRef.current.value,
 
             }).then((response) => {
 
@@ -115,19 +123,18 @@ export default function RegisterAdmin() {
                 // localStorage.setItem(ID, response.data[0].user_id)
                 // localStorage.setItem(USERNAME, response.data[0].username)
 
-                setSuccess('Login Successful! Redirecting to Dashboard...')
+                setSuccess('Admin Registered! Redirecting to Login...')
                 setTimeout(function(){navigate('/')}, 1000)
 
             }).catch((auth_error) => {
 
-                // If there was an uncaught Database Error
+                // If the domain already exists
                 if(auth_error.response.status === 401){
-                    setError('User does not exit or Passwords do not match!')
+                    setError('University with domain entered already exists')
                     console.log(auth_error.response.data)
                 }
-                
+
             })
-            */
         }
         catch (err) {
             setError(err)

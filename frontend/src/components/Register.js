@@ -56,6 +56,33 @@ export default function Register() {
             console.log(emailRef.current.value)
             console.log(passwordRef.current.value)
             console.log(confirmPasswordRef.current.value)
+
+            axios.post("http://localhost:8800/user/register", {
+
+                first_name: firstNameRef.current.value,
+                last_name: lastNameRef.current.value,
+                email: emailRef.current.value,
+                password: passwordRef.current.value
+
+            }).then((response) => {
+
+                console.log(response)
+
+                setSuccess('Register Successful! Redirecting to Login...')
+                setTimeout(function(){navigate('/login')}, 1000)
+
+            }).catch((auth_error) => {
+
+                // If the university doesn't exist
+                if(auth_error.response.status === 401){
+                    setError("University with email domain doesn't exist.")
+                    console.log(auth_error.response.data)
+                }
+                else if(auth_error.response.status === 403){
+                    setError("Not sure!")
+                    console.log(auth_error.response.data)
+                }
+            })
         }
         catch (err) {
             setError(err)

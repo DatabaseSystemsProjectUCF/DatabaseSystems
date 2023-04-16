@@ -2,6 +2,7 @@
 import '../styles/Dashboard.css'
 import '../styles/RSO.css'
 
+import axios from 'axios'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -11,6 +12,7 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SearchIcon from '@mui/icons-material/Search';
 
+import { EMAIL, ID } from '../constants/DatabaseConstants';
 import { Grid } from '@mui/material';
 import { useEffect, useRef, useState } from 'react'
 import { Alert, Button, Form, Modal } from 'react-bootstrap'
@@ -25,73 +27,6 @@ import TopBar from './TopBar'
  * @returns RSO Layout
  */
 export default function RSO() {
-
-    const myRSOs = [
-        {
-            title: "RSO 1",
-            description: "This is RSO 1",
-            num_members: 14
-        },
-        {
-            title: "RSO 2",
-            description: "This is RSO 2",
-            num_members: 5
-        },
-        {
-            title: "RSO 3",
-            description: "This is RSO 3",
-            num_members: 8
-        }
-    ]
-
-    /** MOCK DATA FOR RSO */
-    const RSOs = [
-        {
-            title: "RSO 1",
-            description: "This is RSO 1",
-            num_members: 14
-        },
-        {
-            title: "RSO 2",
-            description: "This is RSO 2",
-            num_members: 5
-        },
-        {
-            title: "RSO 3",
-            description: "This is RSO 3",
-            num_members: 8
-        },
-        {
-            title: "RSO 4",
-            description: "This is RSO 4",
-            num_members: 10
-        },
-        {
-            title: "RSO 5",
-            description: "This is RSO 5aio sdhfkjas dfkljha lsdfjhlask hdfjlhlkas dhflhlaskdh fjlhasljdhf ihasi dhufasdyf oiuhasidf uioas dohf jahskdf gyuoias klfhiuasdy fuo ashdlkh gilawh fasijh fliuias kdfjhauiowryn lgjajsnlkjngsid fkljxh oih sakjngkljhnasuiofh kasdhgioH DKJLWIUGYN UIOFDAHJ GKJAB SDKLJJLAKS KLFJHKSJLDAH FKHDSAJKD HLSA L",
-            num_members: 76
-        },
-        {
-            title: "RSO 6",
-            description: "This is RSO 6",
-            num_members: 45
-        },
-        {
-            title: "RSO 7",
-            description: "This is RSO 7",
-            num_members: 16
-        },
-        {
-            title: "RSO 8",
-            description: "This is RSO 8",
-            num_members: 123
-        },
-        {
-            title: "RSO 9",
-            description: "This is RSO 9",
-            num_members: 54
-        }
-    ]
 
     /** useRefs for RSO Creation */
     const createRSODescRef = useRef()
@@ -108,8 +43,43 @@ export default function RSO() {
     const [isCreateRSOOpen, setIsCreateRSOOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState(1)
     const [pageCards, setPageCards] = useState([])
+    const [RSOs, setRSOs] = useState([])
+    const [myRSOs, setMyRSOs] = useState([])
     const [search, setSearch] = useState('')
-    const [showMyRSOs, setShowMyRSOs] = useState(true)
+    const [showMyRSOs, setShowMyRSOs] = useState(false)
+    const [error, setError] = useState('')
+
+    /**
+     * 
+     * UseEffect for the initial page load. Loads only one time
+     * 
+     */
+    useEffect(() => {
+
+        fetchData()
+
+    }, [])
+
+    /**
+     * 
+     * Fetches initial load data
+     */
+    async function fetchData() {
+        
+        // All RSOs
+        await axios.get("http://localhost:8800/rso/display_all_rso").then((response) => {
+            setRSOs(response.data.data)
+        }).catch((api_error) => {
+            console.log(api_error)
+        })
+
+        // My RSOs
+        await axios.get(`http://localhost:8800/rso/my_rsos?id=${localStorage.getItem(ID)}`).then((response) => {
+            setMyRSOs(response.data.data)
+        }).catch((api_error) => {
+            console.log(api_error)
+        })
+    }
 
     /**
      * 
@@ -172,7 +142,7 @@ export default function RSO() {
             
         setPageCards(spliced)
     
-    }, [pageNumber, showMyRSOs, search])
+    }, [pageNumber, showMyRSOs, search, RSOs, myRSOs])
 
     /**
      * 
@@ -240,9 +210,39 @@ export default function RSO() {
 
         console.log(createRSONameRef.current.value)
         console.log(createRSODescRef.current.value)
+        console.log(localStorage.getItem(EMAIL))
         console.log(createRSOEmail1Ref.current.value)
         console.log(createRSOEmail2Ref.current.value)
         console.log(createRSOEmail3Ref.current.value)
+
+        axios.post("http://localhost:8800/rso/create_rso", {
+
+            name: createRSONameRef.current.value,
+            description: createRSODescRef.current.value,
+            admin_email: localStorage.getItem(EMAIL),
+            email1: createRSOEmail1Ref.current.value,
+            email2: createRSOEmail2Ref.current.value,
+            email3: createRSOEmail3Ref.current.value
+
+        }).then((response) => {
+
+            console.log(response)
+            
+            if(response.status === 200)
+                window.location.reload()
+
+        }).catch((auth_error) => {
+
+            // If the domain already exists
+            if(auth_error.response.status === 401){
+                setError('University with domain entered already exists')
+                console.log(auth_error.response.data)
+            }
+            if(auth_error.response.status === 403){
+                setError('Internal Error')
+                console.log(auth_error.response.data)
+            }
+        })
 
         handleRSOCReateClose()
     }
@@ -251,20 +251,88 @@ export default function RSO() {
      * 
      * Sends a join RSO request to the backend
      * 
-     * @param {*} title - Title of the RSO
+     * @param {*} rso_id - RSO ID
      */
-    function joinRSO(title) {
-        console.log('Joining ', title)
+    function joinRSO(rso_id) {
+        console.log('Joining ', rso_id)
+
+        axios.post(`http://localhost:8800/rso/join_rso?rso_id=${rso_id}`, {
+
+            id: localStorage.getItem(ID)
+
+        }).then((response) => {
+
+            console.log(response)
+            
+            if(response.status === 200){
+                const joined = RSOs.filter((rso) => rso.rso_id === rso_id)
+                const newMyRSOs = [...myRSOs, joined[0]]
+                setMyRSOs(newMyRSOs)
+            }
+
+        }).catch((auth_error) => {
+
+            // If the domain already exists
+            if(auth_error.response.status === 401){
+                setError('University with domain entered already exists')
+                console.log(auth_error.response.data)
+            }
+            if(auth_error.response.status === 403){
+                setError('Internal Error')
+                console.log(auth_error.response.data)
+            }
+        })
     }
 
     /**
      * 
      * Sends a join RSO request to the backend
      * 
-     * @param {*} title - Title of the RSO
+     * @param {*} rso_id - RSO ID
      */
-    function leaveRSO(title) {
-        console.log('Leaving ', title)
+    function leaveRSO(rso_id) {
+        console.log('Leaving ', rso_id)
+
+        axios.put(`http://localhost:8800/rso/leave_rso?rso_id=${rso_id}&id=${localStorage.getItem(ID)}`).then((response) => {
+
+            console.log(response)
+
+            if(response.status === 200){
+                const newRSOs = myRSOs.filter((rso) => rso.rso_id != rso_id)
+                setMyRSOs(newRSOs)
+            }
+
+        }).catch((auth_error) => {
+
+            // If the domain already exists
+            if(auth_error.response.status === 401){
+                setError('University with domain entered already exists')
+                console.log(auth_error.response.data)
+            }
+            if(auth_error.response.status === 403){
+                setError('Internal Error')
+                console.log(auth_error.response.data)
+            }
+        })
+    }
+
+    /**
+     * 
+     * Validates whether the user has already joined the 
+     *  RSO.
+     * 
+     * @param {*} rso_id - RSO ID 
+     * @returns 
+     */
+    function hasAlreadyJoined(rso_id) {
+        let joined = false
+
+        myRSOs.forEach((rso) => {
+            if(rso.rso_id === rso_id)
+                joined = true
+        })
+
+        return joined
     }
 
     // Return RSO elements to be displayed
@@ -363,8 +431,8 @@ export default function RSO() {
                                 return (
                                     <Grid item key={key} xs={2.95} className='cards rounded'>
                                         <div className='title'>
-                                            {value.title}
-                                            <div className='join-icon' onClick={(event) => {leaveRSO(value.title)}}>
+                                            {value.name}
+                                            <div className='join-icon' onClick={(event) => {leaveRSO(value.rso_id)}}>
                                                 <ExitToAppIcon/>
                                             </div>
                                         </div>
@@ -372,7 +440,7 @@ export default function RSO() {
                                             <b><u>Description</u></b> 
                                             : {value.description}
                                         </div>
-                                        <div className='member-count'><b>Member Count:</b> <u>{value.num_members}</u></div>
+                                        <div className='member-count'><b>Member Count:</b> <u>{value.no_members}</u></div>
                                     </Grid>
                                 )
                             })}
@@ -468,16 +536,20 @@ export default function RSO() {
                                 return (
                                     <Grid item key={key} xs={2.95} className='cards rounded'>
                                         <div className='title'>
-                                            {value.title}
-                                            <div className='join-icon' onClick={(event) => {joinRSO(value.title)}}>
-                                                <AddTaskIcon/>
-                                            </div>
+                                            {value.name}
+                                            {
+                                                !hasAlreadyJoined(value.rso_id) &&
+
+                                                <div className='join-icon' onClick={(event) => {joinRSO(value.rso_id)}}>
+                                                    <AddTaskIcon/>
+                                                </div>
+                                            }
                                         </div>
                                         <div className='description'>
                                             <b><u>Description</u></b> 
                                             : {value.description}
                                         </div>
-                                        <div className='member-count'><b>Member Count:</b> <u>{value.num_members}</u></div>
+                                        <div className='member-count'><b>Member Count:</b> <u>{value.no_members}</u></div>
                                     </Grid>
                                 )
                             })}

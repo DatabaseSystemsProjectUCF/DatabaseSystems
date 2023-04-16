@@ -270,11 +270,25 @@
     font-size: 18px;
     align-content: center;
     justify-content: center;
-    margin-left: 100%;
+    margin-left: 20%;
     margin-top: 0%;
+    width: 20px;
+    height: 20px;
 }
 
 .Event .comment-rows .comment .edit-icon:hover{
+    cursor: pointer;
+}
+
+.Event .comment-rows .comment .delete-icon {
+    font-size: 22px;
+    align-content: center;
+    justify-content: center;
+    margin-left: 500%;
+    margin-top: 0%;
+}
+
+.Event .comment-rows .comment .delete-icon:hover{
     cursor: pointer;
 }
 
