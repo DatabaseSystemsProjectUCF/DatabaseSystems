@@ -18,16 +18,22 @@ export default function SearchComponent() {
     return (
         <ul className='Search'>
             <li className='SearchList'>
-                <div id='icon'><SchoolOutlinedIcon style={{fontSize:'20px'}}/></div>
-                <div id='title'>University Search</div>
+                <li className='search-row'>
+                    <div id='icon'><SchoolOutlinedIcon style={{fontSize:'20px'}}/></div>
+                    <div id='title'>University Search</div>
+                </li>
             </li>
             <li className='SearchList'>
-                <div id='icon' ><GroupAddOutlinedIcon style={{fontSize:'20px'}}/></div>
-                <div id='title'>RSO Search</div>
+                <li className='search-row'>
+                    <div id='icon' ><GroupAddOutlinedIcon style={{fontSize:'20px'}}/></div>
+                    <div id='title'>RSO Search</div>
+                </li>
             </li>
             <li className='SearchList'>
-                <div id='icon'><EmojiEventsOutlinedIcon style={{fontSize:'20px'}}/></div>
-                <div id='title'>Events Search</div>
+                <li className='search-row'>
+                    <div id='icon'><EmojiEventsOutlinedIcon style={{fontSize:'20px'}}/></div>
+                    <div id='title'>Events Search</div>
+                </li>
             </li>
         </ul>
     )

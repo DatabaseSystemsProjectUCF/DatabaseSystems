@@ -1,0 +1,183 @@
+.back-drop {
+    width: 100%;
+    height: 85%;
+    position: absolute;
+    top: 5%;
+    left: 6.6%;
+    background-color: black;
+    border: 7.5px solid white;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.back-drop .heading {
+    text-align: center;
+    margin-top: 2%;
+    color: white;
+    font-size: 35px;
+    font-family: inherit;
+    margin-bottom: 0;
+}
+
+.back-drop .section-header {
+    text-align: center;
+    margin-bottom: 0%;
+    color: white;
+    font-size: 25px;
+    font-family: inherit;
+}
+
+.back-drop .form {
+    height: 85%;
+    font-family: inherit;
+}
+
+.form .first-name {
+    margin-left: 20%;
+    margin-bottom: 1%;
+    width: 30%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .first-name .form-label {
+    font-family: inherit;
+    color: inherit;
+}
+
+.form .last-name {
+    position: absolute;
+    margin-left: 52%;
+    top: 23.3%;
+    width: 30%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .last-name .form-label {
+    font-family: inherit;
+    color: inherit;
+}
+
+.form .email {
+    position: absolute;
+    margin-left: 2.5%;
+    width: 30%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .email .form-label {
+    font-family: inherit;
+    color: inherit;
+}
+
+.form .right-form-item {
+    position: absolute;
+    margin-left: 66%;
+    width: 30%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .right-form-item .form-label {
+    font-family: inherit;
+    color: inherit;
+}
+
+.form .center-form-item {
+    position: absolute; 
+    margin-left: 34.3%;
+    width: 30%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .center-form-item .form-label {
+    font-family: inherit;
+    color: inherit;
+}
+
+.form .name {
+    position: absolute; 
+    margin-left: 2.5%;
+    width: 15%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .description {
+    position: absolute; 
+    margin-left: 20%;
+    width: 76%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .no-of-students {
+    position: absolute; 
+    margin-left: 2.5%;
+    width: 10%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .loc-name {
+    position: absolute; 
+    margin-left: 15%;
+    width: 56%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .lat {
+    position: absolute; 
+    margin-left: 73.5%;
+    width: 10%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .long {
+    position: absolute; 
+    margin-left: 86%;
+    width: 10%;
+    font-family: inherit;
+    color: white;
+    text-align: center;
+}
+
+.form .button {
+    position: absolute; 
+    bottom: 5%;
+    margin-left: 2.5%;
+    width: 93.5%;
+    font-family: inherit;
+    color: black;
+    text-align: center;
+}
+
+.line {
+    margin-bottom: 1%;
+    margin-left: 2.5%;
+    width: 95%;
+    height: 2%;
+    border-bottom: 1px solid white;
+}
+
+.section-line {
+    margin-bottom: 1%;
+    margin-left: 45%;
+    width: 10%;
+    height: 2%;
+    border-bottom: 1px solid white;
+}

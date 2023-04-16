@@ -2,8 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
- const connection = require("./../Database");
-//const connection = require("./../DatabaseJuan");
+// const connection = require("./../Database");
+const connection = require("./../Database");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,7 +21,7 @@ const create_univ_handler = async (req, res) => {
   const univ_query = `INSERT INTO university (name, description, no_students, email_domain) VALUES (?, ?, ?, ?)`;
   const user_query = `INSERT INTO users (first_name, last_name, email, password, level_id) VALUES (?, ?, ?, ?, ?)`;
   const s_a_query = `INSERT INTO s_admin (id, univ_id) VALUES (? ,?)`;
-  const loc_query = `INSERT INTO location (name, longitud, latitude, univ_id) VALUES (?, ?, ?, ?)`;
+  const loc_query = `INSERT INTO location (location_name, longitud, latitude, univ_id) VALUES (?, ?, ?, ?)`;
 
   //get user and university ids for s_admin table
   const query1 = `SELECT id FROM users WHERE email = ?`;

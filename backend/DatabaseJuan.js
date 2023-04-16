@@ -1,5 +1,5 @@
 /** MYSQL Instance */
-const mysql = require("mysql2");
+//const mysql = require("mysql2");
 
 /**
  * Database Connection: Takes the following parameters:
@@ -9,12 +9,12 @@ const mysql = require("mysql2");
  *      password:   Corresponding password for DB account
  *      database:   Which DB to access
  */
-const db_er = mysql.createConnection({
+/*const db_er = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "D18eLqVs",
   database: "dbproject",
-});
+});*/
 
 /** Export DB Connection */
-module.exports = db_er;
+//module.exports = db_er;

@@ -1,0 +1,311 @@
+.Event {
+    position: absolute;
+    top: 12%;
+    margin-left: 20% !important;
+    height: 88%;
+    width: 80%;
+    display: flex;
+}
+
+.Event .Search{
+    width: 77%;
+    margin-top: 2%;
+    margin-left: 2%;
+}
+
+.Event .Search .button{
+    position: absolute;
+    width: 5%;
+    height: 6%;
+    top: 3.5%;
+    margin-left: 78.5%;
+    background-color: #bf9717;
+    color: white;
+}
+
+.Event .create-button{
+    position: absolute;
+    width: auto;
+    height: 6%;
+    top: 3.5%;
+    margin-left: 87%;
+    background-color: #bf9717;
+    color:white;
+}
+
+.Event .page-bar {
+    height: 50px;
+    width: 96%;
+    margin: 2%;
+    margin-bottom: 1%;
+    border-bottom: 1px solid black;
+    display: flex;
+    flex-direction: row;
+}
+
+.Event .page-bar .back-icon {
+    width:5%;
+}
+
+.Event .page-bar .back-icon:hover {
+    cursor: pointer;
+}
+
+.Event .page-bar .title{
+    margin-left: 1%;
+    font-size: 30px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.Event .page-bar .add-comment{
+    height: 6%;
+    background-color: #bf9717;
+    color:white;
+    position: absolute;
+    right: 5%;
+    top: 13%;
+}
+
+.Event .page-bar .add-comment:hover{
+    background-color: #7c630e;
+    color:white;
+}
+
+.Event .page-bar .right-arrow{
+    position: absolute;
+    right: 3%;
+    top: 15%;
+    border-radius: 25px;
+}
+
+.Event .page-bar .page-no{
+    position: absolute;
+    right: 7.5%;
+    top: 15%;
+    font-size: 20px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.Event .page-bar .left-arrow{
+    position: absolute;
+    right: 15%;
+    top: 15%;
+    border-radius: 25px;
+}
+
+.Event .page-bar .join-Event-button{
+    margin-top: 0.5%;
+    margin-left: 58%;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.8);
+    text-align: center;
+    display: flex;
+    place-items: center;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+    width: 13%;
+    border-radius: 25px;
+    border: 1px solid #bf9717;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.Event .page-bar .join-Event-button:hover{
+    cursor: pointer;
+    border: 1px solid black;
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.button:hover{
+    cursor: pointer !important;
+    background: gray !important;
+}
+
+.Event .Event-cards{
+    position: relative;
+    height: 75%;
+    width: 96%;
+    margin: 2%;
+    margin-top: 1%;
+}
+
+.Event .Event-cards .cards{
+    margin: 0.2%;
+    border: 1px solid black;
+    height: 48.9%;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: white;
+}
+
+.Event .Event-cards .cards .title{
+    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    height: 20%;
+    width: 70%;
+    font-size: 25px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.Event .Event-cards .cards .title .type{
+    height: 90%;
+    width: 20%;
+    text-align:center;
+    margin-left: 40%;
+    font-size: 15px;
+    padding-top: 5%;
+}
+
+.Event .Event-cards .cards .title .join-icon{
+    height: 90%;
+    width: 17%;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 25px;
+    margin-left: 20%;
+    background-color: #bf9717;
+    color: white;
+}
+
+.Event .Event-cards .cards .title .join-icon:hover{
+    cursor: pointer;
+    background-color: #bf981786;
+    color: black;
+}
+
+.Event .Event-cards .cards .description{
+    height: 40%;
+    width: 90%;
+    font-size: 12.5px;
+    overflow: hidden;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    border-bottom: 1px solid white;
+    margin-bottom: 7%;
+}
+
+.Event .Event-cards .cards .category{
+    width: 90%;
+    font-size: 10px;
+    overflow: hidden;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.Event .Event-cards .cards .location{
+    width: 90%;
+    font-size: 10px;
+    overflow: hidden;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.Event .Event-cards .cards .email{
+    width: 90%;
+    font-size: 10px;
+    overflow: hidden;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.Event .Event-cards .cards .comment-icon{
+    display: flex;
+    position: relative;
+    bottom: 10%;
+    margin-left: 80%;
+    font-size: 5px;
+    width: 12.5%;
+    height: 12.5%;
+    place-items: center;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid white;
+    border-radius: 5px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.Event .Event-cards .cards .comment-icon:hover{
+   cursor: pointer;
+    background-color: #bf981786;
+    color: black;
+    border-color: black
+}
+
+.Event .comment-rows{
+    position: relative;
+    height: 75%;
+    width: 96%;
+    margin: 2%;
+    margin-top: 1%;
+    align-content: flex-start;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.Event .comment-rows .comment{
+    height: 20%;
+    width: 100%;
+    margin: 0.2%;
+    border-bottom: 1px solid black;
+    color: black;
+}
+
+.Event .comment-rows .comment .name{
+    width: 90%;
+    height: 33%;
+    display: flex;
+    flex-direction: row;
+}
+
+.Event .comment-rows .comment .rating {
+    position: relative;
+    right: 0%;
+    margin-left: 15%;
+}
+
+.Event .comment-rows .comment .content {
+    overflow: hidden;
+    margin-bottom: 10%;
+}
+
+.Event .comment-rows .comment .edit-icon {
+    font-size: 18px;
+    align-content: center;
+    justify-content: center;
+    margin-left: 20%;
+    margin-top: 0%;
+    width: 20px;
+    height: 20px;
+}
+
+.Event .comment-rows .comment .edit-icon:hover{
+    cursor: pointer;
+}
+
+.Event .comment-rows .comment .delete-icon {
+    font-size: 22px;
+    align-content: center;
+    justify-content: center;
+    margin-left: 500%;
+    margin-top: 0%;
+}
+
+.Event .comment-rows .comment .delete-icon:hover{
+    cursor: pointer;
+}
+
+.modal {
+  background: rgba(0,0,0, 0.66);
+  position: absolute;
+  float: left;
+  left: 50%;
+  top: 50%;
+}
+
+.modal .info {
+    background-color: rgba(191, 151, 23, 0.35);
+    color: black;
+    border: 1px solid #a6a6a6;
+}
+
+.form-control:focus {
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgb(191, 151, 23) !important;
+}

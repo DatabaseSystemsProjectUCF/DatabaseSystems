@@ -1,6 +1,6 @@
     /** ----------------------- IMPORTS ----------------------- */
     import axios from 'axios'
-    import { AUTHLEVEL, CREATETIME, ID, USERNAME } from '../constants/DatabaseConstants';
+    import { AUTHLEVEL, EMAIL, FIRSTNAME, ID, LASTNAME } from '../constants/DatabaseConstants';
     import background from '../images/ucf_campus.jpg'
     import React, { useRef, useState } from 'react'
     import { Alert, Button, Card, Container, Form } from 'react-bootstrap';
@@ -16,7 +16,7 @@
     export default function Login() {
 
         // Login Form refs and useStates
-        const usernameRef = useRef()
+        const emailRef = useRef()
         const passwordRef = useRef()
         const [error, setError] = useState('')
         const [success, setSuccess] = useState('')
@@ -36,36 +36,38 @@
                 setError('')
                 setLoading(true)
 
+                //console.log(emailRef.current.value)
+                //console.log(passwordRef.current.value)
+
                 // Call the Login API
-                axios.get(`http://localhost:8800/user/login?email=${usernameRef.current.value}&password=${passwordRef.current.value}`, {
-                }).then((response) => {
+                axios.get(`http://localhost:8800/user/login?email=${emailRef.current.value}&password=${passwordRef.current.value}`
+                
+                ).then((response) => {
 
                     console.log(response)
 
                     // Populate browser with the returned User
-                    //localStorage.setItem(AUTHLEVEL, response.data[0].auth_level)
-                    //localStorage.setItem(CREATETIME, response.data[0].create_time)
-                    //localStorage.setItem(ID, response.data[0].user_id)
-                    //localStorage.setItem(USERNAME, response.data[0].username)
+                    localStorage.setItem(AUTHLEVEL, response.data.user.level_id)
+                    localStorage.setItem(FIRSTNAME, response.data.user.first_name)
+                    localStorage.setItem(LASTNAME, response.data.user.last_name)
+                    localStorage.setItem(ID, response.data.user.id)
+                    localStorage.setItem(EMAIL, response.data.user.email)
+
+                    // Populate browser with the returned User
 
                     setSuccess('Login Successful! Redirecting to Dashboard...')
                     //setTimeout(function(){navigate('/')}, 1000)
 
                 }).catch((auth_error) => {
 
-                    // If there was an uncaught Database Error
-                    if(auth_error.response.status === 400){
-                        setError('Unfortunately, something went wrong!')
+                    // If the user does not exist or passwords do not match
+                    if(auth_error.response.status === 401){
+                        setError('User not found or Invalid password')
                         console.log(auth_error.response.data)
                     }
-                    // If the username doesn't exist
+                    // If there's an internal db error
                     if(auth_error.response.status === 403){
-                        setError('Username does not exist, please register an account')
-                        console.log(auth_error.response.data)
-                    }
-                    // If the username password combination is bad
-                    if(auth_error.response.status === 404){
-                        setError('Username/Password combination is incorrect')
+                        setError("There's been an internal error, please try again.")
                         console.log(auth_error.response.data)
                     }
 
@@ -103,7 +105,7 @@
                 </Container>
 
                 {/** Login Component */}
-                <Container style = {{ display:'flex', position: 'fixed', right: '50px', bottom: '100px', width:'500px'}}>
+                <Container style = {{ display:'flex', position: 'fixed', right: '50px', bottom: '100px', width:'500px', flexDirection: 'row'}}>
 
                     {/** Display Error if it exists */}
                     {error && <Alert variant="danger"> {error} </Alert>}
@@ -123,15 +125,15 @@
                             {/** Handle Submit */}
                             <Form onSubmit={handleSubmit}>
 
-                            {/** Username Section */}
-                            <Form.Group id="username">
-                                <Form.Label className="mt-4" style={{fontWeight:'bold', color:'#ffffff', position:'relative', top:'10px'}}>USERNAME</Form.Label>
+                            {/** Email Section */}
+                            <Form.Group id="email">
+                                <Form.Label className="mt-4" style={{fontWeight:'bold', color:'#ffffff', position:'relative', top:'10px'}}>EMAIL</Form.Label>
                                 <Form.Control 
                                     className="square border border-1 border-dark mt-2" 
-                                    type="username" 
-                                    ref={usernameRef} 
+                                    type="email" 
+                                    ref={emailRef} 
                                     style={{backgroundColor:'#f2ecd9'}}
-                                    placeholder="Enter your username...">
+                                    placeholder="Enter your email...">
                                 </Form.Control>
                             </Form.Group>
 
