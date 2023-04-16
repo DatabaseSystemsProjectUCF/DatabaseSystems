@@ -2,8 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-// const connection = require("./../Database");
-const connection = require("./../DatabaseJuan");
+ const connection = require("./../Database");
+//const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,17 +14,34 @@ const login_handler = async (req, res) => {
   const { email, password } = req.body;
   // Query the database for the user with the specified username
   const query = `SELECT * FROM users WHERE email = ?`;
-  var query_result = await connection.promise().query(query, email)
-  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage}) });
-  const user = query_result[0][0];
-  // If the user is found, compare the password hash with the supplied password
-  if (user != null) {
-    bcrypt.compare(password, user.password, (err, isMatch) => {
-      if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
-      if (isMatch) return res.status(200).json({ success : true, message: "Login successful", "user": user });
-      else return res.status(401).json({ success : false, message: "Invalid password" });
-    });
-  } else res.status(401).send({ success : false, message: "User not found" });
+  connection.query(query,[email], (err, result)=>{
+    if (err) return res.status(401).json({ success: false, message: error.sqlMessage });
+    else {
+      //if no user is found
+      const user = result[0];
+      if(result[0]==null){
+        return res.status(403).json({ success: false, message: "user not found"});
+      }
+      
+      console.log(result[0])
+      bcrypt.compare(password, user.password, (err, isMatch)=>{
+        if (err) return res.status(401).json({ success: false, message: err.sqlMessage });
+        if (isMatch) return res.status(200).json({ success : true, message: "Login successful", user: user });
+        else return res.status(403).json({ success : false, message: "Invalid password" });
+      })
+
+  }})
+  // var query_result = await connection.promise().query(query, email)
+  // .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage}) });
+  // const user = query_result[0][0];
+  // // If the user is found, compare the password hash with the supplied password
+  // if (user != null) {
+  //   bcrypt.compare(password, user.password, (err, isMatch) => {
+  //     if (err) return res.status(403).json({ success: false, message: err.sqlMessage });
+  //     if (isMatch) return res.status(200).json({ success : true, message: "Login successful", "user": user });
+  //     else return res.status(401).json({ success : false, message: "Invalid password" });
+  //   });
+  // } else res.status(401).send({ success : false, message: "User not found" });
 };
 
 //REGISTER

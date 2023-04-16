@@ -37,23 +37,19 @@
                 setLoading(true)
 
                 // Call the Login API
-                axios.post("http://localhost:8800/login", {
-
-                    username: usernameRef.current.value,
-                    password: passwordRef.current.value
-
+                axios.get(`http://localhost:8800/user/login?email=${usernameRef.current.value}&password=${passwordRef.current.value}`, {
                 }).then((response) => {
 
                     console.log(response)
 
                     // Populate browser with the returned User
-                    localStorage.setItem(AUTHLEVEL, response.data[0].auth_level)
-                    localStorage.setItem(CREATETIME, response.data[0].create_time)
-                    localStorage.setItem(ID, response.data[0].user_id)
-                    localStorage.setItem(USERNAME, response.data[0].username)
+                    //localStorage.setItem(AUTHLEVEL, response.data[0].auth_level)
+                    //localStorage.setItem(CREATETIME, response.data[0].create_time)
+                    //localStorage.setItem(ID, response.data[0].user_id)
+                    //localStorage.setItem(USERNAME, response.data[0].username)
 
                     setSuccess('Login Successful! Redirecting to Dashboard...')
-                    setTimeout(function(){navigate('/')}, 1000)
+                    //setTimeout(function(){navigate('/')}, 1000)
 
                 }).catch((auth_error) => {
 
