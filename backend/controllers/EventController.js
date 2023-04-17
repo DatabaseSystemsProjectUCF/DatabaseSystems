@@ -15,7 +15,7 @@ const create_event_handler = async (req, res) => {
   const { rso_name, name, description, category, type, date, time, phone, email, name_loc, lat, long } = req.body;
   //Prepare queries for the endpoint
   const verify_location = `SELECT loc_id FROM location WHERE latitude = ? AND longitud = ?`;
-  const create_location = `INSERT INTO location (name, latitude, longitud) VALUES (?, ?, ?)`;
+  const create_location = `INSERT INTO location (location_name, latitude, longitud) VALUES (?, ?, ?)`;
   const verify_rso = `SELECT * FROM rso WHERE name = ?`;
   const create_event_rso = `INSERT INTO event (loc_id, rso_id, name, description, category, type, time, date, phone, email) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -216,6 +216,7 @@ const display_all_events_handler = async (req, res) => {
   const univ_id = query_result[0][0].univ_id;
   var query_result = await connection.promise().query(get_loc_id, univ_id)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
+
   if(query_result[0].length == 1){
     const loc_id = query_result[0][0].loc_id;
     var query_result = await connection.promise().query(get_private_events, [private, loc_id])
@@ -224,6 +225,7 @@ const display_all_events_handler = async (req, res) => {
     //ADD PRIVATE EVENTS TO RESPONSE
     events = events.concat(private_events);
   }
+  
   var query_result = await connection.promise().query(get_rso_ids, id)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
   const rso_ids_json = query_result[0]; //This is an array of JSON
