@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
- const connection = require("./../Database");
-//const connection = require("./../DatabaseJuan");
+const connection = require("./../Database");
+// const connection = require("./../DatabaseJuan");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -164,11 +164,16 @@ const display_my_rsos_handler = async (req, res) => {
     var {rso_id} = element;
     list.push(rso_id);
   });
-  //perform second query
-  query_result = await connection.promise().query(get_rsos, [list])
-  .catch((err) => { res.status(403).json({ success: false, message: err.sqlMessage }) });
-  const result = query_result[0];
-  return res.status(200).json({success: true, data: result});
+  //If the list is empty, return
+  if(list.length == 0)
+    return res.status(200).json({success: true, message: "You have not registered to any RSO's yet"});
+  else{
+    //perform second query
+    query_result = await connection.promise().query(get_rsos, [list])
+    .catch((err) => { res.status(403).json({ success: false, message: err.sqlMessage }) });
+    const result = query_result[0];
+    return res.status(200).json({success: true, data: result});
+  }
 }
 
 //Leave an RSO
@@ -199,4 +204,4 @@ const leave_rso_handler = (req, res)=>{
   })
 };
 
-module.exports = { create_rso_handler, join_rso_handler, display_rso_handler, display_all_rso_handler, display_my_rsos_handler, leave_rso_handler};
+module.exports = { create_rso_handler, join_rso_handler, display_rso_handler, display_all_rso_handler,display_my_rsos_handler, leave_rso_handler};
