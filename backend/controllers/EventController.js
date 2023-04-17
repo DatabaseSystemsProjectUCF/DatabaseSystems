@@ -185,7 +185,7 @@ const display_event_handler = async (req,res) =>{
 //DISPLAY ALL EVENTS, 58 lines
 const display_all_events_handler = async (req, res) => {
   //get user ID from client
-  const {id} = req.body;
+  const {id} = req.query;
   //prepare response variable
   const public = 'public';
   const private = 'private';
