@@ -195,7 +195,7 @@ const display_all_events_handler = async (req, res) => {
   const get_public_events = `SELECT * FROM event INNER JOIN location ON event.loc_id = location.loc_id WHERE type = ?`;
   //GET PRIVATE EVENTS FROM SAME UNIVERSITY AS THE USER
   //Query to get the univ_id of the user
-  const get_univ_id = `SELECT univ_id FROM students WHERE id = ?`;
+  const get_univ_id = `SELECT * FROM students WHERE id = ?`
   //Query to get the location id of the university
   const get_loc_id = `SELECT loc_id FROM location WHERE univ_id = ?`;
   //Query to get the private events with the location of the university
@@ -216,12 +216,14 @@ const display_all_events_handler = async (req, res) => {
   const univ_id = query_result[0][0].univ_id;
   var query_result = await connection.promise().query(get_loc_id, univ_id)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
-  const loc_id = query_result[0][0].loc_id;
-  var query_result = await connection.promise().query(get_private_events, [private, loc_id])
-  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
-  const private_events = query_result[0];
-  //ADD PRIVATE EVENTS TO RESPONSE
-  events = events.concat(private_events);
+  if(query_result[0].length > 0){
+    const loc_id = query_result[0][0].loc_id;
+    var query_result = await connection.promise().query(get_private_events, [private, loc_id])
+    .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
+    const private_events = query_result[0];
+    //ADD PRIVATE EVENTS TO RESPONSE
+    events = events.concat(private_events);
+  }
   var query_result = await connection.promise().query(get_rso_ids, id)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
   const rso_ids_json = query_result[0]; //This is an array of JSON

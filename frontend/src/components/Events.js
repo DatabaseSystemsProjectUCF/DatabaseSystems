@@ -125,7 +125,7 @@ export default function Events() {
         if(search !== '') {
 
             // Find the element, if it exists, find its index and display only that card
-            let idx = Events.findIndex(element => element.title.toLowerCase() === search.toLowerCase())
+            let idx = Events.findIndex(element => element.name.toLowerCase() === search.toLowerCase())
             if(idx !== -1){
                 startidx = idx
                 endidx = idx + 1

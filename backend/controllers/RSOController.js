@@ -165,10 +165,15 @@ const display_my_rsos_handler = async (req, res) => {
     list.push(rso_id);
   });
   //perform second query
-  query_result = await connection.promise().query(get_rsos, [list])
-  .catch((err) => { res.status(403).json({ success: false, message: err.sqlMessage }) });
-  const result = query_result[0];
-  return res.status(200).json({success: true, data: result});
+  if(list.length == 0)
+    return res.status(200).json({success: true, message: "You have not registered to any RSO's yet"});
+  else{
+    //perform second query
+    query_result = await connection.promise().query(get_rsos, [list])
+    .catch((err) => { res.status(403).json({ success: false, message: err.sqlMessage }) });
+    const result = query_result[0];
+    return res.status(200).json({success: true, data: result});
+  }
 }
 
 //Leave an RSO
