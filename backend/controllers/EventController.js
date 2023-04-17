@@ -216,12 +216,14 @@ const display_all_events_handler = async (req, res) => {
   const univ_id = query_result[0][0].univ_id;
   var query_result = await connection.promise().query(get_loc_id, univ_id)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
-  const loc_id = query_result[0][0].loc_id;
-  var query_result = await connection.promise().query(get_private_events, [private, loc_id])
-  .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
-  const private_events = query_result[0];
-  //ADD PRIVATE EVENTS TO RESPONSE
-  events = events.concat(private_events);
+  if(query_result[0].length == 1){
+    const loc_id = query_result[0][0].loc_id;
+    var query_result = await connection.promise().query(get_private_events, [private, loc_id])
+    .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
+    const private_events = query_result[0];
+    //ADD PRIVATE EVENTS TO RESPONSE
+    events = events.concat(private_events);
+  }
   var query_result = await connection.promise().query(get_rso_ids, id)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
   const rso_ids_json = query_result[0]; //This is an array of JSON
