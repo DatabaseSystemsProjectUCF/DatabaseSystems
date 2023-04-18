@@ -164,7 +164,7 @@ const display_my_rsos_handler = async (req, res) => {
     var {rso_id} = element;
     list.push(rso_id);
   });
-  //If the list is empty, return
+  //perform second query
   if(list.length == 0)
     return res.status(200).json({success: true, message: "You have not registered to any RSO's yet"});
   else{

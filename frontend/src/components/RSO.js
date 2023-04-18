@@ -105,7 +105,7 @@ export default function RSO() {
             if(search !== '') {
 
                 // Find the element, if it exists, find its index and display only that card
-                let idx = RSOs.findIndex(element => element.title.toLowerCase() === search.toLowerCase())
+                let idx = RSOs.findIndex(element => element.name.toLowerCase() === search.toLowerCase())
                 if(idx !== -1){
                     startidx = idx
                     endidx = idx + 1
@@ -117,7 +117,11 @@ export default function RSO() {
                 console.log(idx)
             }
 
-            spliced = RSOs.slice(startidx, endidx)
+            if(!RSOs){
+                spliced = []
+                return
+            }
+            else spliced = RSOs.slice(startidx, endidx)
         }
         else{
 
@@ -125,7 +129,7 @@ export default function RSO() {
             if(search !== '') {
 
                 // Find the element, if it exists, find its index and display only that card
-                let idx = RSOs.findIndex(element => element.title.toLowerCase() === search.toLowerCase())
+                let idx = RSOs.findIndex(element => element.name.toLowerCase() === search.toLowerCase())
                 if(idx !== -1){
                     startidx = idx
                     endidx = idx + 1
@@ -137,7 +141,10 @@ export default function RSO() {
                 console.log(idx)
             }
             
-            spliced = myRSOs.slice(startidx, endidx)
+            if(!myRSOs){
+                spliced = []
+            }
+            else spliced = myRSOs.slice(startidx, endidx)
         }
             
         setPageCards(spliced)
@@ -244,6 +251,8 @@ export default function RSO() {
             }
         })
 
+        
+
         handleRSOCReateClose()
     }
 
@@ -266,11 +275,15 @@ export default function RSO() {
             
             if(response.status === 200){
                 const joined = RSOs.filter((rso) => rso.rso_id === rso_id)
-                const newMyRSOs = [...myRSOs, joined[0]]
-                setMyRSOs(newMyRSOs)
+                if(myRSOs) {
+                    const newMyRSOs = [...myRSOs, joined[0]]
+                    setMyRSOs(newMyRSOs)
+                }
             }
 
         }).catch((auth_error) => {
+
+            console.log(auth_error)
 
             // If the domain already exists
             if(auth_error.response.status === 401){
@@ -326,6 +339,9 @@ export default function RSO() {
      */
     function hasAlreadyJoined(rso_id) {
         let joined = false
+
+        if(!myRSOs)
+            return false
 
         myRSOs.forEach((rso) => {
             if(rso.rso_id === rso_id)

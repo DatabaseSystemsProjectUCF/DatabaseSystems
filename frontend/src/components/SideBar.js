@@ -5,7 +5,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { SideBarData } from './SideBarData'
-import { USERNAME } from '../constants/DatabaseConstants'
+import { FIRSTNAME, LASTNAME, USERNAME } from '../constants/DatabaseConstants'
 import SearchComponent from './SearchComponent';
 /** ------------------------------------------------------- */
 
@@ -39,7 +39,10 @@ export default function SideBar() {
      */
     function getCapitalizedUsername(){
         // Get the username
-        let username = localStorage.getItem(USERNAME)
+        let username = localStorage.getItem(FIRSTNAME)
+        let lastname = localStorage.getItem(LASTNAME)
+
+        username = username + ' ' + lastname
 
         // Ensure username has a value
         if(username === null)
