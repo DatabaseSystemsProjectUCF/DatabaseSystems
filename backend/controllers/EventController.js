@@ -14,8 +14,8 @@ const create_event_handler = async (req, res) => {
   //Talk to Usman on best way to receive optional parameter rso_name !!
   const { rso_name, name, description, category, type, date, time, phone, email, name_loc, lat, long } = req.body;
   //Prepare queries for the endpoint
-  const verify_location = `SELECT loc_id FROM location WHERE latitude = ? AND longitud = ?`;
-  const create_location = `INSERT INTO location (name, latitude, longitud) VALUES (?, ?, ?)`;
+  const verify_location = `SELECT loc_id FROM location WHERE latitude = ? AND longitude = ?`;
+  const create_location = `INSERT INTO location (location_name, latitude, longitude) VALUES (?, ?, ?)`;
   const verify_rso = `SELECT * FROM rso WHERE name = ?`;
   const create_event_rso = `INSERT INTO event (loc_id, rso_id, name, description, category, type, time, date, phone, email) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -213,7 +213,7 @@ const display_all_events_handler = async (req, res) => {
   events = events.concat(public_events);
   var query_result = await connection.promise().query(get_univ_id, id)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
-  const univ_id = query_result[0][0].univ_id;
+  const univ_id = (query_result) ? query_result[0][0].univ_id : null;
   var query_result = await connection.promise().query(get_loc_id, univ_id)
   .catch((err) => { return res.status(403).json({success: false, message: err.sqlMessage})});
   if(query_result[0].length > 0){

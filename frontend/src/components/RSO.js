@@ -251,6 +251,8 @@ export default function RSO() {
             }
         })
 
+        
+
         handleRSOCReateClose()
     }
 
@@ -273,11 +275,15 @@ export default function RSO() {
             
             if(response.status === 200){
                 const joined = RSOs.filter((rso) => rso.rso_id === rso_id)
-                const newMyRSOs = [...myRSOs, joined[0]]
-                setMyRSOs(newMyRSOs)
+                if(myRSOs) {
+                    const newMyRSOs = [...myRSOs, joined[0]]
+                    setMyRSOs(newMyRSOs)
+                }
             }
 
         }).catch((auth_error) => {
+
+            console.log(auth_error)
 
             // If the domain already exists
             if(auth_error.response.status === 401){
