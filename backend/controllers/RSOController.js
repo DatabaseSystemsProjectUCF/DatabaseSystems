@@ -60,6 +60,8 @@ const create_rso_handler = async (req, res) => {
   const verify_admin = `SELECT id FROM users WHERE email = ?`;
   const make_admin = `UPDATE users SET level_id = 1 WHERE email = ?;`;
   const query = `INSERT INTO rso (name, description, id, no_members) VALUES (?, ?, ?, 4)`;
+  const joins_query = `INSERT INTO joins (rso_id, id) VALUES (?, ?)`;
+  const rso_query = `SELECT rso_id FROM rso WHERE name = ? `
 
   var query_result = await connection.promise().query(verify_email1, email1)
   .catch((err) => { return res.status(403).json({ success: false, message: err.sqlMessage }) });
@@ -97,6 +99,16 @@ const create_rso_handler = async (req, res) => {
   await connection.promise().query(make_admin, admin_email)
   .catch((err) => { return res.status(403).json({ success: false, message: err.sqlMessage }) });
   //We created the RSO successfully
+
+  //get rso_id and add the admin to the joins table
+  const result = await connection.promise().query(rso_query, [name])
+  .catch((err)=>{ return res.status(403).json({ success: false, message: err.sqlMessage }) })
+  
+  const rso_id = result[0][0].rso_id;
+
+  await connection.promise().query(joins_query, [rso_id, id])
+  .catch((err)=>{ return res.status(403).json({ success: false, message: err.sqlMessage }) })
+
   return res.status(200).json({ success: true, message: "Successfully created an RSO!!" });
 };
 
