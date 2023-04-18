@@ -21,33 +21,6 @@ import TopBar from './TopBar'
  */
 export default function University() {
 
-    const universities = [
-        {
-            title: "University 1",
-            description: "This is University 1",
-            num_members: 14,
-            name_loc: "Downtown orlando",
-            lat: 2.456,
-            long: 5.632
-        },
-        {
-            title: "University 2",
-            description: "This is University 2",
-            num_members: 5,
-            name_loc: "Downtown orlando",
-            lat: 2.456,
-            long: 5.632
-        },
-        {
-            title: "University 3",
-            description: "This is University 3",
-            num_members: 8,
-            name_loc: "Downtown orlando",
-            lat: 2.456,
-            long: 5.632
-        }
-    ]
-
     /** useRefs, useStates for University Page */
     const NUMBEROFITEMSPERPAGE = 8
 
@@ -66,6 +39,33 @@ export default function University() {
      * 
      */
     useEffect(() => {
+
+        const universities = [
+            {
+                title: "University 1",
+                description: "This is University 1",
+                num_members: 14,
+                name_loc: "Downtown orlando",
+                lat: 2.456,
+                long: 5.632
+            },
+            {
+                title: "University 2",
+                description: "This is University 2",
+                num_members: 5,
+                name_loc: "Downtown orlando",
+                lat: 2.456,
+                long: 5.632
+            },
+            {
+                title: "University 3",
+                description: "This is University 3",
+                num_members: 8,
+                name_loc: "Downtown orlando",
+                lat: 2.456,
+                long: 5.632
+            }
+        ]
 
         console.log(search)
 

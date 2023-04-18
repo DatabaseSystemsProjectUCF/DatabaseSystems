@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //Create university profile and super admin for that university
 const create_univ_handler = async (req, res) => {
   //get data from user
-  const {name,description,no_students,first_name,last_name,email,password,loc_name,longitud,latitude,} = req.body;
+  const {name,description,no_students,first_name,last_name,email,password,loc_name,longitude,latitude,} = req.body;
   const email_domain = email.substring(email.indexOf("@"), email.length);
   const level_id = 2;
   const hashedPass = await bcrypt.hash(password, saltRounds);
@@ -21,7 +21,7 @@ const create_univ_handler = async (req, res) => {
   const univ_query = `INSERT INTO university (name, description, no_students, email_domain) VALUES (?, ?, ?, ?)`;
   const user_query = `INSERT INTO users (first_name, last_name, email, password, level_id) VALUES (?, ?, ?, ?, ?)`;
   const s_a_query = `INSERT INTO s_admin (id, univ_id) VALUES (? ,?)`;
-  const loc_query = `INSERT INTO location (location_name, longitud, latitude, univ_id) VALUES (?, ?, ?, ?)`;
+  const loc_query = `INSERT INTO location (location_name, longitude, latitude, univ_id) VALUES (?, ?, ?, ?)`;
 
   //get user and university ids for s_admin table
   const query1 = `SELECT id FROM users WHERE email = ?`;
@@ -64,7 +64,7 @@ const create_univ_handler = async (req, res) => {
             if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
 
             //execute query to add university location to the location table
-            connection.query(loc_query,[loc_name, longitud, latitude, univ_id],(error, result) => {
+            connection.query(loc_query,[loc_name, longitude, latitude, univ_id],(error, result) => {
               if (error) return res.status(403).json({ success: false, message: error.sqlMessage });
 
               return res.status(200).json({success: true,message: "University and User created successfully",});
